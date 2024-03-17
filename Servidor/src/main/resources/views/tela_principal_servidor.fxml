@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<HBox prefHeight="600.0" prefWidth="800.0" spacing="5.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.lucasgois.servidor.controllers.TelaPrincipalServidorController">
+    <children>
+        <GridPane hgap="5.0" vgap="5.0" HBox.hgrow="SOMETIMES">
+            <columnConstraints>
+                <ColumnConstraints minWidth="10.0"/>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0"/>
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0"/>
+            </rowConstraints>
+            <children>
+                <Label text="ID:"/>
+                <TextField fx:id="txf_id_chat" editable="false" GridPane.columnIndex="1"/>
+            </children>
+        </GridPane>
+        <VBox prefWidth="300.0" HBox.hgrow="SOMETIMES">
+            <TextArea fx:id="txa_chat" editable="false" VBox.vgrow="SOMETIMES"/>
+            <HBox>
+                <children>
+                    <TextField fx:id="txf_mensagem" HBox.hgrow="SOMETIMES"/>
+                    <Button fx:id="btn_enviar" mnemonicParsing="false" text="&gt;"/>
+                </children>
+            </HBox>
+        </VBox>
+    </children>
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+    </padding>
+</HBox>
