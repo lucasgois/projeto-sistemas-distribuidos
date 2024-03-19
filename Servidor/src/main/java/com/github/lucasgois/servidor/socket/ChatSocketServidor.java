@@ -8,6 +8,8 @@ import com.github.lucasgois.core.mensagem.Mensagem;
 import com.github.lucasgois.core.util.Constantes;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -15,6 +17,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -67,7 +70,9 @@ public class ChatSocketServidor {
                 final Dado dado = cliente.receber();
 
                 if (dado instanceof final Mensagem mensagem) {
-                    consumer.accept(dado.getOrigem() + ": " + mensagem.getTexto());
+                    consumer.accept(mensagem.formatar());
+
+                    enviarTodos(mensagem, cliente.getId());
 
                 } else if (dado instanceof final DadoConexao dadoConexao) {
 
@@ -110,12 +115,21 @@ public class ChatSocketServidor {
             throw new AvisoException("Não há clientes conectados");
         }
 
-        for (final ClienteConectado cliente : clientes) {
-            try {
-                final Mensagem mensagem = new Mensagem();
-                mensagem.setOrigem(Constantes.ID_SERVIDOR);
-                mensagem.setTexto(texto);
+        final Mensagem mensagem = new Mensagem();
+        mensagem.setOrigem(Constantes.ID_SERVIDOR);
+        mensagem.setTexto(texto);
 
+        enviarTodos(mensagem, Constantes.ID_SERVIDOR);
+    }
+
+    private void enviarTodos(final Mensagem mensagem, @Nullable final UUID... naoEnviarPara) {
+        for (final ClienteConectado cliente : clientes) {
+
+            if (contem(cliente, naoEnviarPara)) {
+                continue;
+            }
+
+            try {
                 cliente.enviar(mensagem);
 
                 consumer.accept(mensagem.formatar());
@@ -128,5 +142,15 @@ public class ChatSocketServidor {
             }
         }
     }
+
+    private static boolean contem(@NotNull final ClienteConectado cliente, @Nullable final UUID[] exceto) {
+        for (final UUID uuid : exceto) {
+            if (cliente.getId() == uuid) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
 
