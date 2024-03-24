@@ -4,8 +4,10 @@ import com.github.lucasgois.core.exceptions.AvisoException;
 import com.github.lucasgois.core.exceptions.ErroRuntimeException;
 import com.github.lucasgois.core.mensagem.Dado;
 import com.github.lucasgois.core.mensagem.DadoConexao;
+import com.github.lucasgois.core.mensagem.DadoEmail;
 import com.github.lucasgois.core.mensagem.Mensagem;
 import com.github.lucasgois.core.util.Constantes;
+import com.github.lucasgois.servidor.Main;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -73,6 +75,9 @@ public class ChatSocketServidor {
                     consumer.accept(mensagem.formatar());
 
                     enviarTodos(mensagem, cliente.getId());
+
+                } else if (dado instanceof final DadoEmail email) {
+                    Main.email(email);
 
                 } else if (dado instanceof final DadoConexao dadoConexao) {
 
