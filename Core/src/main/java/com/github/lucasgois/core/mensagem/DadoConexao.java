@@ -11,4 +11,7 @@ public class DadoConexao extends Dado {
 
     private final boolean status;
 
+    public static final DadoConexao ONLINE = new DadoConexao(true);
+    public static final DadoConexao OFFLINE = new DadoConexao(false);
+
 }
