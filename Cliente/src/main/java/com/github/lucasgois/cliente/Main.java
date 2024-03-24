@@ -1,5 +1,8 @@
 package com.github.lucasgois.cliente;
 
+import com.github.lucasgois.cliente.socket.ConexaoCliente;
+import com.github.lucasgois.core.mensagem.DadoEmail;
+import com.github.lucasgois.core.mensagem.DadoUsuario;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -23,6 +26,17 @@ public class Main extends Application {
         primaryStage.setScene(cena);
         primaryStage.setTitle("Titulo da Minha Aplicação");
         primaryStage.show();
+
+
+        final ConexaoCliente conexaoCliente = new ConexaoCliente();
+        conexaoCliente.conectar();
+
+        final DadoEmail email = new DadoEmail();
+
+        email.setDestinatario(new DadoUsuario("Nome"));
+        email.setAssunto("Assunto teste1");
+
+        conexaoCliente.enviarEmail(email);
     }
 
 }

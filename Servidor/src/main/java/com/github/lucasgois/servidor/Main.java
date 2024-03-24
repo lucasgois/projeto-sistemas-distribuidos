@@ -1,7 +1,8 @@
 package com.github.lucasgois.servidor;
 
+import com.github.lucasgois.core.mensagem.DadoEmail;
 import com.github.lucasgois.servidor.banco.HibernateUtil;
-import com.github.lucasgois.servidor.banco.entidades.Usuario;
+import com.github.lucasgois.servidor.banco.entidades.Email;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,8 +11,6 @@ import javafx.stage.Stage;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.jetbrains.annotations.NotNull;
-
-import java.nio.charset.StandardCharsets;
 
 public class Main extends Application {
 
@@ -33,23 +32,24 @@ public class Main extends Application {
 
 
     }
-
-    private void teste() {
+    static SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+    public static void email(DadoEmail email) {
         //        Conexao.init();
 
-        SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+
         Session session = sessionFactory.openSession();
         session.beginTransaction();
 
-        Usuario entidade = new Usuario();
-        entidade.setNome("Teste");
-        entidade.setSenha("123".getBytes(StandardCharsets.UTF_8));
+        Email entidade = new Email();
+
+        entidade.setAssunto(email.getAssunto());
+
         session.save(entidade);
 
         session.getTransaction().commit();
         session.close();
 
-        HibernateUtil.shutdown();
+//        HibernateUtil.shutdown();
 
     }
 
