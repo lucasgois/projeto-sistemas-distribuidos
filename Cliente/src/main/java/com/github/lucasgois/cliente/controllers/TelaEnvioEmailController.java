@@ -95,6 +95,11 @@ public class TelaEnvioEmailController implements Initializable, Alerta {
 
     private void handleEnviar() {
         //quando a tela estiver no modo de escrever email, aqui colocar a requisicao de envio para o servidor
+        try {
+
+        } catch (Exception ex){
+            aviso("Usuario "+ tf_para.getText() + "não existe.");
+        }
     }
 
     public void showAndWait(Stage stage, int id) {

@@ -53,7 +53,7 @@ public class HibernateUtil {
     private @NotNull StandardServiceRegistryBuilder criarBuilder() {
         final StandardServiceRegistryBuilder registryBuilder = new StandardServiceRegistryBuilder();
 
-        final Map<String, Object> settings = HashMap.newHashMap(6);
+        final Map<String, Object> settings = new HashMap<>(6);
         settings.put(JdbcSettings.JAKARTA_JDBC_DRIVER, "org.h2.Driver");
         settings.put(JdbcSettings.JAKARTA_JDBC_URL, "jdbc:h2:./servidor.db;DB_CLOSE_ON_EXIT=FALSE");
         settings.put(JdbcSettings.DIALECT, "org.hibernate.dialect.H2Dialect");
