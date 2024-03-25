@@ -70,7 +70,6 @@ public class TelaEnvioEmailController implements Initializable, Alerta {
         if (selectedFile != null) {
             System.out.println("Arquivo selecionado: " + selectedFile.getAbsolutePath());
 
-
 //            FileInputStream fis;
 //            try {
 //                fis = new FileInputStream(selectedFile);
@@ -92,12 +91,13 @@ public class TelaEnvioEmailController implements Initializable, Alerta {
         try {
             final DadoEmail email = new DadoEmail();
 
-            email.setAssunto("");
-            email.setTexto("");
-            email.setDestinatario("");
-            email.setRemetente("");
+            email.setAssunto(tf_assunto.getText());
+            email.setTexto(tf_texto.getText());
+            email.setDestinatario(tf_para.getText());
+            email.setRemetente(ConexaoCliente.SINGLETON.getLogin().getNome());
 
             ConexaoCliente.SINGLETON.enviarEmail(email);
+            aviso("E-mail enviado.");
         } catch (final Exception ex) {
             aviso("Usuario " + tf_para.getText() + "não existe.");
         }
