@@ -14,6 +14,7 @@ import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 @Log4j2
@@ -95,6 +96,7 @@ public class TelaEnvioEmailController implements Initializable, Alerta {
             email.setTexto(tf_texto.getText());
             email.setDestinatario(tf_para.getText());
             email.setRemetente(ConexaoCliente.SINGLETON.getLogin().getNome());
+            email.setAnexos(tb_anexo.getItems());
 
             ConexaoCliente.SINGLETON.enviarEmail(email);
             aviso("E-mail enviado.");
