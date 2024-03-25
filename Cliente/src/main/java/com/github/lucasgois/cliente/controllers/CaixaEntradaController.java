@@ -73,7 +73,7 @@ public class CaixaEntradaController implements Initializable, Alerta {
     private void handleVizualizaEmail() {
         //chamar tela de envio de email na versao de vizualizacao
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ListaClientes.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/tela_envio_email.fxml"));
             Stage stage = new Stage();
             stage.setScene(new Scene(loader.load()));
             stage.setTitle("Vizualiza Email");
@@ -89,5 +89,10 @@ public class CaixaEntradaController implements Initializable, Alerta {
     private void handleSair() {
         Stage stage = (Stage) btn_sair.getScene().getWindow();
         stage.close();
+    }
+
+    public void showAndWait(Stage stage, String usuario) {
+        lb_usuario.setText(usuario);
+        stage.showAndWait();
     }
 }

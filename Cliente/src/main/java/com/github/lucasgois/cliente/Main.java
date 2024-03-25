@@ -18,7 +18,7 @@ public class Main extends Application {
     @Override
     public void start(final Stage primaryStage) throws Exception {
         final FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/views/tela_principal_cliente.fxml"));
+        loader.setLocation(getClass().getResource("/views/login.fxml"));
 
         final Parent raiz = loader.load();
 
