@@ -1,5 +1,6 @@
 package com.github.lucasgois.cliente.controllers;
 
+import com.github.lucasgois.cliente.socket.ConexaoCliente;
 import com.github.lucasgois.core.mensagem.DadoEmail;
 import com.github.lucasgois.core.util.Alerta;
 import javafx.beans.property.SimpleObjectProperty;
@@ -12,7 +13,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
-import lombok.extern.java.Log;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
@@ -29,14 +29,10 @@ public class CaixaEntradaController implements Initializable, Alerta {
     private Button btn_sair;
     @FXML
     private Button btn_abrir;
-
     @FXML
     private Button btn_atualizar;
-
     @FXML
     private Button btn_escrever;
-
-
     @FXML
     private Label lb_usuario;
     @FXML
@@ -80,7 +76,7 @@ public class CaixaEntradaController implements Initializable, Alerta {
         }
     }
 
-    private void atualizarTabela(){
+    private void atualizarTabela() {
         //requisição para atualizar a tabela com os email do servidor
     }
 
@@ -111,12 +107,13 @@ public class CaixaEntradaController implements Initializable, Alerta {
     }
 
     private void handleSair() {
-        Stage stage = (Stage) btn_sair.getScene().getWindow();
-        stage.close();
+        ((Stage) btn_sair.getScene().getWindow()).close();
     }
 
-    public void showAndWait(Stage stage, String usuario) {
-        lb_usuario.setText(usuario);
-        stage.showAndWait();
+    public void showAndWait() {
+        lb_usuario.setText(ConexaoCliente.SINGLETON.getLogin().getNome());
+
+        ((Stage) lb_usuario.getScene().getWindow()).showAndWait();
     }
+
 }

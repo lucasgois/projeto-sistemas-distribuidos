@@ -17,7 +17,7 @@ public interface HandlerMensagem {
     Logger log = LogManager.getLogger(HandlerMensagem.class);
 
     default void enviaDado(@NotNull final OutputStream outputStream, @NotNull final Dado dado) throws SocketException {
-        log.info("para enviar: {}", dado);
+        log.info("Enviando: {}", dado);
 
         try {
             final byte[] mensagemSerializada = dado.write();
@@ -54,7 +54,7 @@ public interface HandlerMensagem {
             }
 
             final T dado = Dado.read(recebido);
-            log.info("recebido: {}", dado);
+            log.info("Recebendo: {}", dado);
             return dado;
 
         } catch (final SocketException ex) {

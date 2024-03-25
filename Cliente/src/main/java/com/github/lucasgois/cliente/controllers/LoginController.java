@@ -46,8 +46,7 @@ public class LoginController implements Initializable, Alerta {
                 stage.setScene(new Scene(loader.load()));
                 stage.setTitle("Caixa de Entrada");
 
-                final CaixaEntradaController caixaEntradaController = loader.getController();
-                caixaEntradaController.showAndWait(stage, tf_usuario.getText());
+                ((CaixaEntradaController) loader.getController()).showAndWait();
             }
 
         } catch (final Exception ex) {

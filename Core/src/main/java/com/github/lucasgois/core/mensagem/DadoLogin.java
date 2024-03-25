@@ -1,15 +1,15 @@
 package com.github.lucasgois.core.mensagem;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class DadoLogin extends Dado {
 
-    private final String nome;
-    private final String senha;
+    private String nome;
+    private String senha;
+    private String token;
 
 }

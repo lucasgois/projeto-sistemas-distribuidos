@@ -3,13 +3,14 @@ package com.github.lucasgois.cliente.socket;
 import com.github.lucasgois.core.exceptions.ErroRuntimeException;
 import com.github.lucasgois.core.mensagem.*;
 import com.github.lucasgois.core.util.Constantes;
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,13 +22,15 @@ public final class ConexaoCliente implements HandlerMensagem {
 
     public static final ConexaoCliente SINGLETON = new ConexaoCliente();
 
-    private UUID token = null;
+    @Getter
+    @Setter
+    private DadoLogin login = null;
 
     private ConexaoCliente() {
     }
 
     public boolean isConectado() {
-        return token != null;
+        return login.getToken() != null;
     }
 
     public void conectar(@NotNull final DadoLogin login) {
@@ -49,8 +52,8 @@ public final class ConexaoCliente implements HandlerMensagem {
         try {
             final Dado mensagem = recebeDado(socket.getInputStream());
 
-            if (mensagem instanceof final DadoToken dadoToken) {
-                token = dadoToken.getToken();
+            if (mensagem instanceof final DadoLogin dadoLogin) {
+                login.setToken(dadoLogin.getToken());
 
             } else {
                 throw new ErroRuntimeException("Tratar: " + mensagem);
