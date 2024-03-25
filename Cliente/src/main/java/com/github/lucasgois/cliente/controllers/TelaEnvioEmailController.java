@@ -11,12 +11,14 @@ import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 
 @Log4j2
+@SuppressWarnings("java:S116")
 public class TelaEnvioEmailController implements Initializable, Alerta {
 
     @FXML
@@ -95,7 +97,7 @@ public class TelaEnvioEmailController implements Initializable, Alerta {
             email.setTexto(tf_texto.getText());
             email.setDestinatario(tf_para.getText());
             email.setRemetente(ConexaoCliente.SINGLETON.getLogin().getNome());
-//            email.setAnexos(tb_anexo.getItems());
+            email.setAnexos(tb_anexo.getItems());
 
             ConexaoCliente.SINGLETON.enviarEmail(email);
             aviso("E-mail enviado.");
@@ -107,36 +109,37 @@ public class TelaEnvioEmailController implements Initializable, Alerta {
         }
     }
 
-    public void showAndWait(final Stage stage, final int id) {
+    public void showAndWait(final Stage stage, final DadoEmail dadoEmail) {
 
         this.stage = stage;
 
-        if (id != 0) {
-            infoEmail(id);
-            tf_para.setEditable(false);
-            tf_assunto.setEditable(false);
-            tf_texto.setEditable(false);
-            btn_enviar.setVisible(false);
-            btn_anexarArquivos.setVisible(false);
-            btn_vizualizaAnexo.setVisible(true);
-        } else {
+        if (dadoEmail == null) {
             tf_para.setEditable(true);
             tf_assunto.setEditable(true);
             tf_texto.setEditable(true);
             btn_enviar.setVisible(true);
             btn_anexarArquivos.setVisible(true);
             btn_vizualizaAnexo.setVisible(false);
+
+        } else {
+            infoEmail(dadoEmail);
+            tf_para.setEditable(false);
+            tf_assunto.setEditable(false);
+            tf_texto.setEditable(false);
+            btn_enviar.setVisible(false);
+            btn_anexarArquivos.setVisible(false);
+            btn_vizualizaAnexo.setVisible(true);
         }
+
         stage.showAndWait();
     }
 
-    private void infoEmail(final int id) {
+    private void infoEmail(@NotNull final DadoEmail dadoEmail) {
         //dados do email via requisição onde trara tudo menos o anexo, só o nome dele pelo ID
 
-
-        lb_nomeUsuario.setText("Usuário: " + "remetente");
-        tf_para.setText("Usuario destinatario");
-        tf_assunto.setText("Esse é um dado mocado para teste");
-        tf_texto.setText("Esse é um dado mocado para teste texto");
+        lb_nomeUsuario.setText(dadoEmail.getRemetente());
+        tf_para.setText(dadoEmail.getDestinatario());
+        tf_assunto.setText(dadoEmail.getAssunto());
+        tf_texto.setText(dadoEmail.getTexto());
     }
 }

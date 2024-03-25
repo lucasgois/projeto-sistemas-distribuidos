@@ -14,10 +14,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -74,19 +71,26 @@ public class ChatSocketServidor {
                 } else if (dado instanceof final DadoLogin dadoLogin) {
                     login = dadoLogin;
                     BancoHandler.login(login);
+                    cliente.enviar(login);
 
                 } else if (dado instanceof final DadoLogout dadoLogout) {
-                    log.info("Logout: {}", dadoLogout.getToken());
+                    Objects.requireNonNull(login, "Login nulo");
+                    log.info("Logout: " + login.getNome());
                     break;
 
                 } else if (dado instanceof final DadoEmail email) {
                     BancoHandler.email(email);
 
-                } else if (dado instanceof final DadoSolicitarEmail solicitarEmail) {
+                } else if (dado instanceof DadoSolicitarEmail) {
+                    Objects.requireNonNull(login, "Login nulo");
 
-                    if (login == null) {
-                        throw new ErroRuntimeException("Login nulo");
-                    }
+                    final List<DadoEmail> dadoListaEmail = BancoHandler.buscarEmails(login.getNome());
+                    cliente.enviar(new DadoListaEmail(dadoListaEmail));
+
+                } else if (dado instanceof final DadoExcluirEmail excluirEmail) {
+                    Objects.requireNonNull(login, "Login nulo");
+
+                    BancoHandler.excluirEmail(excluirEmail.getId());
 
                     final List<DadoEmail> dadoListaEmail = BancoHandler.buscarEmails(login.getNome());
                     cliente.enviar(new DadoListaEmail(dadoListaEmail));

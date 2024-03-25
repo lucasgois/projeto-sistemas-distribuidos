@@ -60,6 +60,7 @@ public class BancoHandler {
 
             for (final Email email : usuarioEncontrado.getEmails()) {
                 final DadoEmail dadoEmail = new DadoEmail();
+                dadoEmail.setId(email.getId());
                 dadoEmail.setRemetente(email.getRemetente().getNome());
                 dadoEmail.setDestinatario(email.getDestinatario().getNome());
                 dadoEmail.setAssunto(email.getAssunto());
@@ -101,6 +102,17 @@ public class BancoHandler {
         final UUID uuid = UUID.randomUUID();
         UUID_SET.add(uuid);
         return uuid;
+    }
+
+    public void excluirEmail(final int id) {
+        try (final Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+
+            final Email email = session.get(Email.class, id);
+            session.remove(email);
+
+            session.getTransaction().commit();
+        }
     }
 
 }

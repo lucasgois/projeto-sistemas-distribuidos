@@ -9,10 +9,4 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = true)
 public class DadoLogout extends Dado {
 
-    private UUID token;
-
-    public DadoLogout(final UUID token) {
-        this.token = token;
-    }
-
 }

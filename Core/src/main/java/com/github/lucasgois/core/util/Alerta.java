@@ -24,6 +24,8 @@ public interface Alerta {
     }
 
     default void erro(@NotNull final Throwable throwable) {
+        throwable.printStackTrace();
+
         final Alert alert = new Alert(Alert.AlertType.ERROR);
 
         alert.setTitle("Erro");

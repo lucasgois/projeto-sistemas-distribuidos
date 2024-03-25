@@ -38,16 +38,17 @@ public class LoginController implements Initializable, Alerta {
         try {
             ConexaoCliente.SINGLETON.conectar(new DadoLogin(tf_usuario.getText(), tf_senha.getText()));
 
-            while (!ConexaoCliente.SINGLETON.isConectado()) {
-                ((Stage) tf_usuario.getScene().getWindow()).close();
-
-                final FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/caixa_entrada.fxml"));
-                final Stage stage = new Stage();
-                stage.setScene(new Scene(loader.load()));
-                stage.setTitle("Caixa de Entrada");
-
-                ((CaixaEntradaController) loader.getController()).showAndWait();
+            while (!ConexaoCliente.SINGLETON.getConectado().get()) {
             }
+
+            ((Stage) tf_usuario.getScene().getWindow()).close();
+
+            final FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/caixa_entrada.fxml"));
+            final Stage stage = new Stage();
+            stage.setScene(new Scene(loader.load()));
+            stage.setTitle("Caixa de Entrada");
+
+            ((CaixaEntradaController) loader.getController()).showAndWait();
 
         } catch (final Exception ex) {
             erro(ex);
