@@ -12,6 +12,7 @@ public class DadoEmail extends Dado {
     private DadoUsuario remetente;
     private DadoUsuario destinatario;
     private String assunto;
+    private String texto;
     private List<DadoAnexo> anexos;
 
 }
