@@ -37,6 +37,7 @@ public final class ConexaoCliente implements HandlerMensagem {
         try {
             socket = new Socket("127.0.0.1", Constantes.PORTA_CHAT);
             enviaDado(socket.getOutputStream(), login);
+            this.login = login;
 
         } catch (final ConnectException ex) {
             throw new ErroRuntimeException("Sem conexão com o servidor", ex);

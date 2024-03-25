@@ -70,7 +70,7 @@ public class ChatSocketServidor {
 
                 } else if (dado instanceof final DadoLogin login) {
                     final UUID uuid = BancoHandler.login(login);
-                    cliente.enviar(new DadoToken(uuid));
+                    cliente.enviar(new DadoLogin(uuid));
 
                 } else if (dado instanceof final DadoEmail email) {
                     BancoHandler.email(email);
