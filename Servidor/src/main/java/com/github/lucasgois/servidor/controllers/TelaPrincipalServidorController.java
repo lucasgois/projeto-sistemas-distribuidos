@@ -11,11 +11,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import lombok.extern.log4j.Log4j2;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
+@Log4j2
 @SuppressWarnings("java:S116")
 public class TelaPrincipalServidorController implements Initializable, Alerta {
 
@@ -29,13 +31,10 @@ public class TelaPrincipalServidorController implements Initializable, Alerta {
     private Button btn_enviar;
 
     private final ChatSocketServidor chatSocket = new ChatSocketServidor();
-    private final Consumer<String> consumer = texto -> txa_chat.appendText(texto + "\n");
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
         txf_id_chat.setText(Constantes.ID_SERVIDOR.toString());
-
-        chatSocket.setConsumer(consumer);
 
         txf_mensagem.setOnAction(this::onAction);
         btn_enviar.setOnAction(this::onAction);

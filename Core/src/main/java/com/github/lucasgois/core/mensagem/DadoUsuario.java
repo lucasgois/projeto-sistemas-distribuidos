@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public class DadoUsuario extends Dado {
 
     private String usuario;
-    private byte[] senha;
+    private String senha;
 
     public DadoUsuario() {
     }
@@ -18,8 +18,9 @@ public class DadoUsuario extends Dado {
         this.usuario = usuario;
     }
 
-    public DadoUsuario(final String usuario, final byte @NotNull [] senha) {
+    public DadoUsuario(final String usuario, @NotNull final String senha) {
         this.usuario = usuario;
-        this.senha = senha.clone();
+        this.senha = senha;
     }
+
 }

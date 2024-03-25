@@ -10,8 +10,8 @@ import java.util.List;
 public class DadoEmail extends Dado {
 
     private int id;
-    private DadoUsuario remetente;
-    private DadoUsuario destinatario;
+    private String remetente;
+    private String destinatario;
     private String assunto;
     private String texto;
     private List<DadoAnexo> anexos;

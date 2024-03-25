@@ -1,18 +1,17 @@
 package com.github.lucasgois.servidor;
 
-import com.github.lucasgois.core.mensagem.DadoEmail;
 import com.github.lucasgois.servidor.banco.HibernateUtil;
-import com.github.lucasgois.servidor.banco.entidades.Email;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import lombok.extern.log4j.Log4j2;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.jetbrains.annotations.NotNull;
 
-public class Main extends Application {
+@Log4j2
+public class MainServidor extends Application {
 
     public static void main(final String[] args) {
         launch(args);
@@ -20,6 +19,12 @@ public class Main extends Application {
 
     @Override
     public void start(@NotNull final Stage primaryStage) throws Exception {
+
+        try (final Session session = HibernateUtil.getSessionFactory().openSession()) {
+            session.beginTransaction();
+            session.getTransaction().commit();
+        }
+
         final FXMLLoader loader = new FXMLLoader();
         loader.setLocation(getClass().getResource("/views/tela_principal_servidor.fxml"));
 
@@ -29,28 +34,6 @@ public class Main extends Application {
         primaryStage.setScene(cena);
         primaryStage.setTitle("Servidor chat");
         primaryStage.show();
-
-
-    }
-    static SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
-    public static void email(DadoEmail email) {
-        //        Conexao.init();
-
-
-        Session session = sessionFactory.openSession();
-        session.beginTransaction();
-
-        Email entidade = new Email();
-
-        entidade.setAssunto(email.getAssunto());
-
-        session.save(entidade);
-
-        session.getTransaction().commit();
-        session.close();
-
-//        HibernateUtil.shutdown();
-
     }
 
 }

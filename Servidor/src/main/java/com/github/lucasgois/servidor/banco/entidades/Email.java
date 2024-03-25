@@ -18,7 +18,8 @@ public class Email {
     @JoinColumn(name = "remetente_id", referencedColumnName = "id")
     private Usuario remetente;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "destinatario_id")
     private Usuario destinatario;
 
     private String conteudo;

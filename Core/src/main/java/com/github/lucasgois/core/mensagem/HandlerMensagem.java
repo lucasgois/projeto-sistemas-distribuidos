@@ -1,6 +1,8 @@
 package com.github.lucasgois.core.mensagem;
 
 import com.github.lucasgois.core.exceptions.ErroRuntimeException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -8,16 +10,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public interface HandlerMensagem {
 
     @SuppressWarnings("ConstantDeclaredInInterface")
-    Logger log = Logger.getLogger(HandlerMensagem.class.getName());
+    Logger log = LogManager.getLogger(HandlerMensagem.class);
 
     default void enviaDado(@NotNull final OutputStream outputStream, @NotNull final Dado dado) throws SocketException {
-        log.log(Level.INFO, "para enviar: {0}", dado);
+        log.info("para enviar: {}", dado);
 
         try {
             final byte[] mensagemSerializada = dado.write();
@@ -54,7 +54,7 @@ public interface HandlerMensagem {
             }
 
             final T dado = Dado.read(recebido);
-            log.log(Level.INFO, "recebido: {0}", dado);
+            log.info("recebido: {}", dado);
             return dado;
 
         } catch (final SocketException ex) {

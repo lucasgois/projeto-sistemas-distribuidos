@@ -3,25 +3,23 @@ package com.github.lucasgois.cliente.socket;
 import com.github.lucasgois.core.exceptions.ErroRuntimeException;
 import com.github.lucasgois.core.mensagem.*;
 import com.github.lucasgois.core.util.Constantes;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
 
 public class ConexaoCliente implements HandlerMensagem {
 
-    private Socket socket;
     private final ExecutorService executor = Executors.newCachedThreadPool();
+    private Socket socket;
 
-    public void conectar() {
+    public void conectar(@NotNull final DadoLogin login) {
         try {
             socket = new Socket("127.0.0.1", Constantes.PORTA_CHAT);
-            enviaDado(socket.getOutputStream(), DadoConexao.ONLINE);
-            enviaDado(socket.getOutputStream(), new DadoUsuario("Lucas", "123".getBytes(StandardCharsets.UTF_8)));
+            enviaDado(socket.getOutputStream(), login);
         } catch (final IOException ex) {
             throw new ErroRuntimeException(ex);
         }
@@ -32,21 +30,20 @@ public class ConexaoCliente implements HandlerMensagem {
     private void aguardarServidor() {
         try {
             final Mensagem mensagem = recebeDado(socket.getInputStream());
-            log.log(Level.INFO, "Recebido: {0}", mensagem);
+            log.info("Recebido: {}", mensagem);
 
         } catch (final SocketException ex) {
-            log.log(Level.INFO, "finalizado");
+            log.info("finalizado");
             return;
 
         } catch (final IOException e) {
-            fecharConexao();
             throw new ErroRuntimeException(e);
         }
 
         try {
             executor.execute(this::aguardarServidor);
         } catch (final Exception ex) {
-            log.log(Level.WARNING, ex.getMessage());
+            log.warn(ex.getMessage());
         }
     }
 
@@ -60,17 +57,16 @@ public class ConexaoCliente implements HandlerMensagem {
         });
     }
 
-    public void fecharConexao() {
-        try {
-            enviaDado(socket.getOutputStream(), DadoConexao.OFFLINE);
-
-            if (socket != null && !socket.isClosed()) {
-                socket.close();
+    public void buscarEmails(@NotNull final DadoUsuario remetente) {
+        executor.execute(() -> {
+            try {
+                enviaDado(socket.getOutputStream(), new DadoSolicitarEmail(remetente));
+                final Dado dado = recebeDado(socket.getInputStream());
+                log.info("BUSCADO: {}", dado);
+            } catch (final IOException ex) {
+                throw new ErroRuntimeException(ex);
             }
-        } catch (final IOException e) {
-            throw new ErroRuntimeException(e);
-        }
-        executor.shutdownNow();
+        });
     }
 
 }

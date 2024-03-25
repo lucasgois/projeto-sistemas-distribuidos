@@ -1,15 +1,15 @@
 package com.github.lucasgois.cliente;
 
-import com.github.lucasgois.cliente.socket.ConexaoCliente;
-import com.github.lucasgois.core.mensagem.DadoEmail;
-import com.github.lucasgois.core.mensagem.DadoUsuario;
+import com.github.lucasgois.cliente.exemplo.ExemploDeUso;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import lombok.extern.log4j.Log4j2;
 
-public class Main extends Application {
+@Log4j2
+public class MainCliente extends Application {
 
     public static void main(final String[] args) {
         launch(args);
@@ -26,17 +26,14 @@ public class Main extends Application {
         primaryStage.setScene(cena);
         primaryStage.setTitle("Client chat");
         primaryStage.show();
+    }
 
+    private static void exemploDeUso() {
 
-        final ConexaoCliente conexaoCliente = new ConexaoCliente();
-        conexaoCliente.conectar();
-
-        final DadoEmail email = new DadoEmail();
-
-        email.setDestinatario(new DadoUsuario("Nome"));
-        email.setAssunto("Assunto teste1");
-
-        conexaoCliente.enviarEmail(email);
+        final ExemploDeUso exemplo = new ExemploDeUso();
+        exemplo.login();
+        exemplo.enviarEmail();
+        exemplo.buscarEmail();
     }
 
 }

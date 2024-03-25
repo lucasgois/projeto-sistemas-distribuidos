@@ -2,14 +2,11 @@ package com.github.lucasgois.servidor.socket;
 
 import com.github.lucasgois.core.exceptions.AvisoException;
 import com.github.lucasgois.core.exceptions.ErroRuntimeException;
-import com.github.lucasgois.core.mensagem.Dado;
-import com.github.lucasgois.core.mensagem.DadoConexao;
-import com.github.lucasgois.core.mensagem.DadoEmail;
-import com.github.lucasgois.core.mensagem.Mensagem;
+import com.github.lucasgois.core.mensagem.*;
 import com.github.lucasgois.core.util.Constantes;
-import com.github.lucasgois.servidor.Main;
+import com.github.lucasgois.servidor.banco.BancoHandler;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,8 +19,8 @@ import java.util.Collection;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Consumer;
 
+@Log4j2
 @NoArgsConstructor
 public class ChatSocketServidor {
 
@@ -31,10 +28,7 @@ public class ChatSocketServidor {
     private volatile boolean rodando = false;
     private final ExecutorService pool = Executors.newCachedThreadPool();
 
-    @Setter
-    private Consumer<String> consumer;
-
-    private final Collection<ClienteConectado> clientes = new ArrayList<>(4);
+    private final Collection<SocketCliente> clientes = new ArrayList<>(4);
 
     public void iniciar() {
         pool.execute(() -> {
@@ -62,7 +56,7 @@ public class ChatSocketServidor {
 
     @SuppressWarnings({"java:S1163", "ChainOfInstanceofChecks"})
     private void handleClient(final Socket socket) {
-        final ClienteConectado cliente = new ClienteConectado(socket);
+        final SocketCliente cliente = new SocketCliente(socket);
 
         try {
             clientes.add(cliente);
@@ -72,23 +66,29 @@ public class ChatSocketServidor {
                 final Dado dado = cliente.receber();
 
                 if (dado instanceof final Mensagem mensagem) {
-                    consumer.accept(mensagem.formatar());
-
                     enviarTodos(mensagem, cliente.getId());
 
+                } else if (dado instanceof final DadoLogin login) {
+                    final UUID uuid = BancoHandler.login(login);
+                    cliente.enviar(new DadoToken(uuid));
+
                 } else if (dado instanceof final DadoEmail email) {
-                    Main.email(email);
+                    BancoHandler.email(email);
 
-                } else if (dado instanceof final DadoConexao dadoConexao) {
+                } else if (dado instanceof final DadoSolicitarEmail solicitarEmail) {
+                    log.info("SOLICITAR EMAIL {}", solicitarEmail);
 
-                    if (dadoConexao.isStatus()) {
-                        cliente.setId(dadoConexao.getOrigem());
-                        consumer.accept(dado.getOrigem() + ": conectou");
+                    var teste = BancoHandler.buscarEmails(solicitarEmail.getUsuario());
+                    log.info("TESTE {}", teste);
 
-                    } else {
-                        consumer.accept(cliente.getId() + ": desconectou");
-                        break;
-                    }
+//                } else if (dado instanceof final DadoLogout logout) {
+//
+//                    if (dadoConexao.isStatus()) {
+//                        cliente.setId(dadoConexao.getOrigem());
+//
+//                    } else {
+//                        break;
+//                    }
                 }
             }
 
@@ -128,7 +128,7 @@ public class ChatSocketServidor {
     }
 
     private void enviarTodos(final Mensagem mensagem, @Nullable final UUID... naoEnviarPara) {
-        for (final ClienteConectado cliente : clientes) {
+        for (final SocketCliente cliente : clientes) {
 
             if (contem(cliente, naoEnviarPara)) {
                 continue;
@@ -136,8 +136,6 @@ public class ChatSocketServidor {
 
             try {
                 cliente.enviar(mensagem);
-
-                consumer.accept(mensagem.formatar());
 
             } catch (final SocketException ex) {
                 clientes.remove(cliente);
@@ -148,7 +146,7 @@ public class ChatSocketServidor {
         }
     }
 
-    private static boolean contem(@NotNull final ClienteConectado cliente, @Nullable final UUID[] exceto) {
+    private static boolean contem(@NotNull final SocketCliente cliente, @Nullable final UUID[] exceto) {
         for (final UUID uuid : exceto) {
             if (cliente.getId() == uuid) {
                 return true;

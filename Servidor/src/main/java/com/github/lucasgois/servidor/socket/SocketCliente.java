@@ -7,6 +7,7 @@ import com.github.lucasgois.core.mensagem.Mensagem;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -14,22 +15,22 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.UUID;
 
-@Log
-class ClienteConectado implements HandlerMensagem {
+@Log4j2
+class SocketCliente implements HandlerMensagem {
 
     @Getter
     @Setter
     private UUID id;
     private final Socket socket;
 
-    ClienteConectado(final Socket socket) {
+    SocketCliente(final Socket socket) {
         this.socket = socket;
     }
 
-    void enviar(@NotNull final Mensagem mensagem) throws SocketException {
+    void enviar(@NotNull final Dado dado) throws SocketException {
 
         try {
-            enviaDado(socket.getOutputStream(), mensagem);
+            enviaDado(socket.getOutputStream(), dado);
         } catch (final SocketException e) {
             throw e;
 

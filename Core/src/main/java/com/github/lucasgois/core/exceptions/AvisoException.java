@@ -1,24 +1,23 @@
 package com.github.lucasgois.core.exceptions;
 
-import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 
-import java.util.logging.Level;
-
-@Log
+@Log4j2
 public class AvisoException extends Exception {
 
     public AvisoException(final String message) {
         super(message);
-        log.log(Level.WARNING, message);
+        log.warn(message);
     }
 
     public AvisoException(final String message, final Throwable cause) {
         super(message, cause);
-        log.log(Level.WARNING, message, cause);
+        log.warn(message, cause);
     }
 
     public AvisoException(final Throwable cause) {
         super(cause);
-        log.log(Level.WARNING, cause.getMessage(), cause);
+        log.warn(cause.getMessage(), cause);
     }
+
 }

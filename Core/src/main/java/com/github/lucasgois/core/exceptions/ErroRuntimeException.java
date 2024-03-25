@@ -1,24 +1,23 @@
 package com.github.lucasgois.core.exceptions;
 
-import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 
-import java.util.logging.Level;
-
-@Log
+@Log4j2
 public class ErroRuntimeException extends RuntimeException {
 
     public ErroRuntimeException(final String message) {
         super(message);
-        log.log(Level.SEVERE, message);
+        log.error(message);
     }
 
     public ErroRuntimeException(final String message, final Throwable cause) {
         super(message, cause);
-        log.log(Level.SEVERE, message, cause);
+        log.error(message, cause);
     }
 
     public ErroRuntimeException(final Throwable cause) {
         super(cause);
-        log.log(Level.SEVERE, cause.getMessage(), cause);
+        log.error(cause.getMessage(), cause);
     }
+
 }

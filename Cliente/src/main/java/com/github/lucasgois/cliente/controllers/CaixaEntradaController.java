@@ -1,27 +1,25 @@
 package com.github.lucasgois.cliente.controllers;
 
-import com.github.lucasgois.cliente.ChatSocketCliente;
-import com.github.lucasgois.core.exceptions.ErroException;
-import com.github.lucasgois.core.exceptions.SemConexaoComServidorException;
 import com.github.lucasgois.core.mensagem.DadoEmail;
-import com.github.lucasgois.core.mensagem.Email;
 import com.github.lucasgois.core.util.Alerta;
-import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-@Log
+@Log4j2
 @SuppressWarnings("java:S116")
 public class CaixaEntradaController implements Initializable, Alerta {
 
@@ -59,7 +57,7 @@ public class CaixaEntradaController implements Initializable, Alerta {
         btn_atualizar.setOnAction(event -> atualizarTabela());
 
         tb_email_assunto.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getAssunto()));
-        tb_email_remetente.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getRemetente().getUsuario()));
+        tb_email_remetente.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getRemetente()));
     }
 
     private void atualizarTabela(){

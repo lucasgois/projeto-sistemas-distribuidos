@@ -13,6 +13,7 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.cfg.JdbcSettings;
 import org.hibernate.cfg.SchemaToolingSettings;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,28 +22,18 @@ import java.util.Map;
 @UtilityClass
 public class HibernateUtil {
 
-    private StandardServiceRegistry registry;
-    private SessionFactory sessionFactory;
+    private StandardServiceRegistry registry = null;
+    private SessionFactory sessionFactory = getSessionFactory();
 
     public SessionFactory getSessionFactory() {
         if (sessionFactory == null) {
             try {
-                final StandardServiceRegistryBuilder registryBuilder = new StandardServiceRegistryBuilder();
-
-                final Map<String, Object> settings = HashMap.newHashMap(6);
-                settings.put(JdbcSettings.JAKARTA_JDBC_DRIVER, "org.h2.Driver");
-                settings.put(JdbcSettings.JAKARTA_JDBC_URL, "jdbc:h2:./servidor.db;DB_CLOSE_ON_EXIT=FALSE");
-                settings.put(JdbcSettings.DIALECT, "org.hibernate.dialect.H2Dialect");
-                settings.put(JdbcSettings.SHOW_SQL, true);
-                settings.put(AvailableSettings.CURRENT_SESSION_CONTEXT_CLASS, "thread");
-                settings.put(SchemaToolingSettings.HBM2DDL_AUTO, "update");
-
-                registryBuilder.applySettings(settings);
+                final StandardServiceRegistryBuilder registryBuilder = criarBuilder();
                 registry = registryBuilder.build();
 
                 final MetadataSources sources = new MetadataSources(registry)
-                        .addAnnotatedClass(Usuario.class)
                         .addAnnotatedClass(Email.class)
+                        .addAnnotatedClass(Usuario.class)
                         .addAnnotatedClass(Anexos.class);
 
                 final Metadata metadata = sources.getMetadataBuilder().build();
@@ -57,6 +48,21 @@ public class HibernateUtil {
             }
         }
         return sessionFactory;
+    }
+
+    private @NotNull StandardServiceRegistryBuilder criarBuilder() {
+        final StandardServiceRegistryBuilder registryBuilder = new StandardServiceRegistryBuilder();
+
+        final Map<String, Object> settings = HashMap.newHashMap(6);
+        settings.put(JdbcSettings.JAKARTA_JDBC_DRIVER, "org.h2.Driver");
+        settings.put(JdbcSettings.JAKARTA_JDBC_URL, "jdbc:h2:./servidor.db;DB_CLOSE_ON_EXIT=FALSE");
+        settings.put(JdbcSettings.DIALECT, "org.hibernate.dialect.H2Dialect");
+        settings.put(JdbcSettings.SHOW_SQL, true);
+        settings.put(AvailableSettings.CURRENT_SESSION_CONTEXT_CLASS, "thread");
+        settings.put(SchemaToolingSettings.HBM2DDL_AUTO, "update");
+
+        registryBuilder.applySettings(settings);
+        return registryBuilder;
     }
 
     public void shutdown() {
