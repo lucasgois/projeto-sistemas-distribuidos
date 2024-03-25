@@ -1,10 +1,8 @@
 package com.github.lucasgois.servidor;
 
 import com.github.lucasgois.servidor.banco.HibernateUtil;
+import com.github.lucasgois.servidor.socket.ChatSocketServidor;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.Session;
@@ -25,15 +23,8 @@ public class MainServidor extends Application {
             session.getTransaction().commit();
         }
 
-        final FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(getClass().getResource("/views/tela_principal_servidor.fxml"));
-
-        final Parent raiz = loader.load();
-
-        final Scene cena = new Scene(raiz);
-        primaryStage.setScene(cena);
-        primaryStage.setTitle("Servidor chat");
-        primaryStage.show();
+        final ChatSocketServidor chatSocket = new ChatSocketServidor();
+        chatSocket.iniciar();
     }
 
 }

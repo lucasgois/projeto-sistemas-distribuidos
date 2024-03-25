@@ -11,8 +11,10 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicReference;
 
 @SuppressWarnings("java:S654")
 public final class ConexaoCliente implements HandlerMensagem {
@@ -25,6 +27,8 @@ public final class ConexaoCliente implements HandlerMensagem {
     @Getter
     @Setter
     private DadoLogin login = null;
+    @Getter
+    private final AtomicReference<List<DadoEmail>> listaEmails = new AtomicReference<>();
 
     private ConexaoCliente() {
     }
@@ -55,6 +59,10 @@ public final class ConexaoCliente implements HandlerMensagem {
 
             if (mensagem instanceof final DadoLogin dadoLogin) {
                 login.setToken(dadoLogin.getToken());
+
+            } else if (mensagem instanceof final DadoListaEmail listaEmail) {
+                log.info("Emails: {}", listaEmail);
+                listaEmails.set(listaEmail.getLista());
 
             } else {
                 throw new ErroRuntimeException("Tratar: " + mensagem);
@@ -89,8 +97,6 @@ public final class ConexaoCliente implements HandlerMensagem {
         executor.execute(() -> {
             try {
                 enviaDado(socket.getOutputStream(), new DadoSolicitarEmail());
-                final Dado dado = recebeDado(socket.getInputStream());
-                log.info("BUSCADO: {}", dado);
             } catch (final IOException ex) {
                 throw new ErroRuntimeException(ex);
             }

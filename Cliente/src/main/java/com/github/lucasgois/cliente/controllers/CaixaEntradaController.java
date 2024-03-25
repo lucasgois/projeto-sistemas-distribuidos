@@ -53,12 +53,7 @@ public class CaixaEntradaController implements Initializable, Alerta {
         tb_email_assunto.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getAssunto()));
         tb_email_remetente.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getRemetente()));
 
-        final DadoEmail dadoEmail = new DadoEmail();
-        dadoEmail.setId(2);
-        dadoEmail.setRemetente("Remetente");
-        dadoEmail.setAssunto("Assunto teste");
-
-        tb_produto.getItems().addAll(dadoEmail);
+        atualizarTabela();
     }
 
     private void escreverEmail() {
@@ -77,8 +72,17 @@ public class CaixaEntradaController implements Initializable, Alerta {
     }
 
     private void atualizarTabela() {
+        tb_produto.getItems().clear();
+
         //requisição para atualizar a tabela com os email do servidor
         ConexaoCliente.SINGLETON.buscarEmails();
+
+        while (ConexaoCliente.SINGLETON.getListaEmails().get() == null) {
+        }
+
+        for (final DadoEmail listaEmail : ConexaoCliente.SINGLETON.getListaEmails().get()) {
+            tb_produto.getItems().add(listaEmail);
+        }
     }
 
     private void excluiEmail() {

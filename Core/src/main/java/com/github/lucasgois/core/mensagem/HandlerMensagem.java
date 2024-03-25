@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -30,7 +31,7 @@ public interface HandlerMensagem {
             outputStream.flush();
 
         } catch (final SocketException e) {
-            throw e;
+            log.info("Conexão encerrada");
 
         } catch (final IOException e) {
             throw new ErroRuntimeException(e);

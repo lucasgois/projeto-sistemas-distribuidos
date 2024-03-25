@@ -5,7 +5,6 @@ import com.github.lucasgois.core.exceptions.ErroRuntimeException;
 import com.github.lucasgois.core.mensagem.*;
 import com.github.lucasgois.core.util.Constantes;
 import com.github.lucasgois.servidor.banco.BancoHandler;
-import com.github.lucasgois.servidor.banco.entidades.Email;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -74,6 +73,7 @@ public class ChatSocketServidor {
 
                 } else if (dado instanceof final DadoLogin dadoLogin) {
                     login = dadoLogin;
+                    BancoHandler.login(login);
 
                 } else if (dado instanceof final DadoLogout dadoLogout) {
                     log.info("Logout: {}", dadoLogout.getToken());
@@ -83,22 +83,13 @@ public class ChatSocketServidor {
                     BancoHandler.email(email);
 
                 } else if (dado instanceof final DadoSolicitarEmail solicitarEmail) {
-                    log.info("SOLICITAR EMAIL {}", solicitarEmail);
 
                     if (login == null) {
                         throw new ErroRuntimeException("Login nulo");
                     }
 
-                    final List<Email> teste = BancoHandler.buscarEmails(login.getNome());
-                    log.info("TESTE {}", teste);
-
-                    for (Email email : teste) {
-                        DadoEmail dado1 = new DadoEmail();
-
-                        dado1.setTexto(email.getConteudo());
-
-                        cliente.enviar(dado1);
-                    }
+                    final List<DadoEmail> dadoListaEmail = BancoHandler.buscarEmails(login.getNome());
+                    cliente.enviar(new DadoListaEmail(dadoListaEmail));
 
                 } else {
                     throw new ErroRuntimeException("Tratar: " + dado);

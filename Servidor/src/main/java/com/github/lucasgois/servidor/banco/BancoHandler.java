@@ -7,7 +7,6 @@ import com.github.lucasgois.servidor.banco.entidades.Email;
 import com.github.lucasgois.servidor.banco.entidades.Usuario;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
-import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,8 +22,8 @@ public class BancoHandler {
         try (final Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
 
-            final Usuario remetente = buscarUusuario(session, email.getRemetente());
-            final Usuario destinatario = buscarUusuario(session, email.getDestinatario());
+            final Usuario remetente = buscarUsuario(session, email.getRemetente());
+            final Usuario destinatario = buscarUsuario(session, email.getDestinatario());
 
             if (destinatario == null) {
                 throw new ErroRuntimeException("Destinatario nao encontrado: " + email.getDestinatario());
@@ -41,32 +40,41 @@ public class BancoHandler {
         }
     }
 
-    public Usuario buscarUusuario(final Session session, final String nome) {
+    private Usuario buscarUsuario(@NotNull final Session session, final String nome) {
         return session.createQuery("FROM Usuario WHERE nome = :nome", Usuario.class)
                 .setParameter("nome", nome)
                 .uniqueResult();
     }
 
-    public List<Email> buscarEmails(@NotNull final String usuario) {
+    public List<DadoEmail> buscarEmails(@NotNull final String usuario) {
         final Usuario usuarioEncontrado;
 
         try (final Session session = HibernateUtil.getSessionFactory().openSession()) {
-            usuarioEncontrado = buscarUusuario(session, usuario);
+            usuarioEncontrado = buscarUsuario(session, usuario);
 
             if (usuarioEncontrado == null) {
                 throw new ErroRuntimeException("Usuário não encontrado: " + usuario);
             }
 
-            Hibernate.initialize(usuarioEncontrado.getEmails());
+            final List<DadoEmail> dadoEmails = new ArrayList<>(8);
 
-            return usuarioEncontrado.getEmails();
+            for (final Email email : usuarioEncontrado.getEmails()) {
+                final DadoEmail dadoEmail = new DadoEmail();
+                dadoEmail.setRemetente(email.getRemetente().getNome());
+                dadoEmail.setDestinatario(email.getDestinatario().getNome());
+                dadoEmail.setAssunto(email.getAssunto());
+                dadoEmail.setTexto(email.getConteudo());
+                dadoEmails.add(dadoEmail);
+            }
+
+            return dadoEmails;
         }
 
     }
 
     public UUID login(@NotNull final DadoLogin login) {
         try (final Session session = HibernateUtil.getSessionFactory().openSession()) {
-            final Usuario usuarioEncontrado = buscarUusuario(session, login.getNome());
+            final Usuario usuarioEncontrado = buscarUsuario(session, login.getNome());
 
             if (usuarioEncontrado == null) {
                 session.beginTransaction();
@@ -79,7 +87,7 @@ public class BancoHandler {
                 return getUuid();
             } else {
                 if (Objects.equals(usuarioEncontrado.getSenha(), login.getSenha())) {
-                    log.info("Login efetuado com sucesso: {}", usuarioEncontrado);
+                    log.info("Login efetuado com sucesso: {}", usuarioEncontrado.getNome());
                     return getUuid();
 
                 } else {
