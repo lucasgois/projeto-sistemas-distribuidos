@@ -53,7 +53,7 @@ public class CaixaEntradaController implements Initializable, Alerta {
         tb_email_assunto.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getAssunto()));
         tb_email_remetente.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getRemetente()));
 
-        DadoEmail dadoEmail = new DadoEmail();
+        final DadoEmail dadoEmail = new DadoEmail();
         dadoEmail.setId(2);
         dadoEmail.setRemetente("Remetente");
         dadoEmail.setAssunto("Assunto teste");
@@ -63,21 +63,22 @@ public class CaixaEntradaController implements Initializable, Alerta {
 
     private void escreverEmail() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/tela_envio_email.fxml"));
-            Stage stage = new Stage();
+            final FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/tela_envio_email.fxml"));
+            final Stage stage = new Stage();
             stage.setScene(new Scene(loader.load()));
             stage.setTitle("Escrever E-mail");
 
-            TelaEnvioEmailController telaEnvioEmailController = loader.getController();
+            final TelaEnvioEmailController telaEnvioEmailController = loader.getController();
             telaEnvioEmailController.showAndWait(stage, 0);
 
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             erro(ex);
         }
     }
 
     private void atualizarTabela() {
         //requisição para atualizar a tabela com os email do servidor
+        ConexaoCliente.SINGLETON.buscarEmails();
     }
 
     private void excluiEmail() {
@@ -93,15 +94,15 @@ public class CaixaEntradaController implements Initializable, Alerta {
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/tela_envio_email.fxml"));
-            Stage stage = new Stage();
+            final FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/tela_envio_email.fxml"));
+            final Stage stage = new Stage();
             stage.setScene(new Scene(loader.load()));
             stage.setTitle("Vizualiza Email");
 
-            TelaEnvioEmailController telaEnvioEmailController = loader.getController();
+            final TelaEnvioEmailController telaEnvioEmailController = loader.getController();
             telaEnvioEmailController.showAndWait(stage, tb_produto.getSelectionModel().getSelectedItem().getId());
 
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             erro(ex);
         }
     }
@@ -111,7 +112,7 @@ public class CaixaEntradaController implements Initializable, Alerta {
         ((Stage) btn_sair.getScene().getWindow()).close();
     }
 
-    public void showAndWait() {
+    void showAndWait() {
         lb_usuario.setText(ConexaoCliente.SINGLETON.getLogin().getNome());
 
         final Stage stage = (Stage) lb_usuario.getScene().getWindow();

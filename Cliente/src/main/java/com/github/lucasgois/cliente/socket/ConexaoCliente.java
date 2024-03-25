@@ -85,10 +85,10 @@ public final class ConexaoCliente implements HandlerMensagem {
         });
     }
 
-    public void buscarEmails(@NotNull final DadoUsuario remetente) {
+    public void buscarEmails() {
         executor.execute(() -> {
             try {
-                enviaDado(socket.getOutputStream(), new DadoSolicitarEmail(remetente));
+                enviaDado(socket.getOutputStream(), new DadoSolicitarEmail());
                 final Dado dado = recebeDado(socket.getInputStream());
                 log.info("BUSCADO: {}", dado);
             } catch (final IOException ex) {

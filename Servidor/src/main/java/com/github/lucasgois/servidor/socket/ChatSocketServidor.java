@@ -5,6 +5,7 @@ import com.github.lucasgois.core.exceptions.ErroRuntimeException;
 import com.github.lucasgois.core.mensagem.*;
 import com.github.lucasgois.core.util.Constantes;
 import com.github.lucasgois.servidor.banco.BancoHandler;
+import com.github.lucasgois.servidor.banco.entidades.Email;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
@@ -16,6 +17,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -59,6 +61,8 @@ public class ChatSocketServidor {
         final SocketCliente cliente = new SocketCliente(socket);
 
         try {
+            DadoLogin login = null;
+
             clientes.add(cliente);
 
             // Leitura continua
@@ -68,9 +72,8 @@ public class ChatSocketServidor {
                 if (dado instanceof final Mensagem mensagem) {
                     enviarTodos(mensagem, cliente.getId());
 
-                } else if (dado instanceof final DadoLogin login) {
-                    final UUID uuid = BancoHandler.login(login);
-                    cliente.enviar(new DadoLogin(uuid));
+                } else if (dado instanceof final DadoLogin dadoLogin) {
+                    login = dadoLogin;
 
                 } else if (dado instanceof final DadoLogout dadoLogout) {
                     log.info("Logout: {}", dadoLogout.getToken());
@@ -82,8 +85,20 @@ public class ChatSocketServidor {
                 } else if (dado instanceof final DadoSolicitarEmail solicitarEmail) {
                     log.info("SOLICITAR EMAIL {}", solicitarEmail);
 
-                    var teste = BancoHandler.buscarEmails(solicitarEmail.getUsuario());
+                    if (login == null) {
+                        throw new ErroRuntimeException("Login nulo");
+                    }
+
+                    final List<Email> teste = BancoHandler.buscarEmails(login.getNome());
                     log.info("TESTE {}", teste);
+
+                    for (Email email : teste) {
+                        DadoEmail dado1 = new DadoEmail();
+
+                        dado1.setTexto(email.getConteudo());
+
+                        cliente.enviar(dado1);
+                    }
 
                 } else {
                     throw new ErroRuntimeException("Tratar: " + dado);

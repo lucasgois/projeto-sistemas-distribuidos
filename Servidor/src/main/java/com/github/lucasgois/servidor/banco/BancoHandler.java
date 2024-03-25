@@ -3,7 +3,6 @@ package com.github.lucasgois.servidor.banco;
 import com.github.lucasgois.core.exceptions.ErroRuntimeException;
 import com.github.lucasgois.core.mensagem.DadoEmail;
 import com.github.lucasgois.core.mensagem.DadoLogin;
-import com.github.lucasgois.core.mensagem.DadoUsuario;
 import com.github.lucasgois.servidor.banco.entidades.Email;
 import com.github.lucasgois.servidor.banco.entidades.Usuario;
 import lombok.experimental.UtilityClass;
@@ -48,14 +47,14 @@ public class BancoHandler {
                 .uniqueResult();
     }
 
-    public List<Email> buscarEmails(@NotNull final DadoUsuario usuario) {
+    public List<Email> buscarEmails(@NotNull final String usuario) {
         final Usuario usuarioEncontrado;
 
         try (final Session session = HibernateUtil.getSessionFactory().openSession()) {
-            usuarioEncontrado = buscarUusuario(session, usuario.getUsuario());
+            usuarioEncontrado = buscarUusuario(session, usuario);
 
             if (usuarioEncontrado == null) {
-                throw new ErroRuntimeException("Usuário não encontrado: " + usuario.getUsuario());
+                throw new ErroRuntimeException("Usuário não encontrado: " + usuario);
             }
 
             Hibernate.initialize(usuarioEncontrado.getEmails());
