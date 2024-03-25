@@ -1,5 +1,7 @@
 package com.github.lucasgois.cliente.controllers;
 
+import com.github.lucasgois.cliente.socket.ConexaoCliente;
+import com.github.lucasgois.core.mensagem.DadoLogin;
 import com.github.lucasgois.core.util.Alerta;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -9,7 +11,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -17,18 +18,16 @@ public class LoginController implements Initializable, Alerta {
 
     @FXML
     private Button btn_enviar;
-
     @FXML
     private TextField tf_senha;
-
     @FXML
     private TextField tf_usuario;
 
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        tf_senha.setText("");
+    public void initialize(final URL location, final ResourceBundle resources) {
         tf_usuario.setText("");
+        tf_senha.setText("");
         btn_enviar.setOnAction(event -> conectar());
     }
 
@@ -37,21 +36,21 @@ public class LoginController implements Initializable, Alerta {
         // se o servidor tiver fora estora erro
 
         try {
-            //metodo de requisicao conectar
-        } catch (Exception ex) {
-            erro(ex);
-        }
+            ConexaoCliente.SINGLETON.conectar(new DadoLogin(tf_usuario.getText(), tf_senha.getText()));
 
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/caixa_entrada.fxml"));
-            Stage stage = new Stage();
-            stage.setScene(new Scene(loader.load()));
-            stage.setTitle("Caixa de Entrada");
+            while (!ConexaoCliente.SINGLETON.isConectado()) {
+                ((Stage) tf_usuario.getScene().getWindow()).close();
 
-            CaixaEntradaController caixaEntradaController = loader.getController();
-            caixaEntradaController.showAndWait(stage, tf_usuario.getText());
+                final FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/caixa_entrada.fxml"));
+                final Stage stage = new Stage();
+                stage.setScene(new Scene(loader.load()));
+                stage.setTitle("Caixa de Entrada");
 
-        } catch (IOException ex) {
+                final CaixaEntradaController caixaEntradaController = loader.getController();
+                caixaEntradaController.showAndWait(stage, tf_usuario.getText());
+            }
+
+        } catch (final Exception ex) {
             erro(ex);
         }
     }

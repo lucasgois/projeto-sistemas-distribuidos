@@ -25,36 +25,29 @@ public class CaixaEntradaController implements Initializable, Alerta {
 
     @FXML
     private Button btn_excluir;
-
     @FXML
     private Button btn_sair;
-
     @FXML
     private Button btn_abrir;
-
-    @FXML
-    private Button btn_atualizar;
-
+//    @FXML
+//    private Button btn_atualizar;
     @FXML
     private Label lb_usuario;
-
     @FXML
     private TableView<DadoEmail> tb_produto;
-
     @FXML
     private TableColumn<DadoEmail, String> tb_email_assunto;
-
     @FXML
     private TableColumn<DadoEmail, String> tb_email_remetente;
 
-    DadoEmail objetoEmail;
+    private DadoEmail objetoEmail;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
         btn_abrir.setOnAction(event -> handleVizualizaEmail());
         btn_sair.setOnAction(event -> handleSair());
         btn_excluir.setOnAction(event -> excluiEmail());
-        btn_atualizar.setOnAction(event -> atualizarTabela());
+//        btn_atualizar.setOnAction(event -> atualizarTabela());
 
         tb_email_assunto.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getAssunto()));
         tb_email_remetente.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getRemetente()));

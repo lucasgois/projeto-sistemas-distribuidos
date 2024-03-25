@@ -2,7 +2,6 @@ package com.github.lucasgois.cliente.exemplo;
 
 import com.github.lucasgois.cliente.socket.ConexaoCliente;
 import com.github.lucasgois.core.mensagem.DadoEmail;
-import com.github.lucasgois.core.mensagem.DadoLogin;
 import com.github.lucasgois.core.mensagem.DadoUsuario;
 import lombok.extern.log4j.Log4j2;
 
@@ -12,11 +11,8 @@ public class ExemploDeUso {
     private final DadoUsuario destinatario = new DadoUsuario("destinatario_teste", "123");
     private final DadoUsuario remetente = new DadoUsuario("remetente_teste");
 
-    private final ConexaoCliente conexao = new ConexaoCliente();
+    private final ConexaoCliente conexao = ConexaoCliente.SINGLETON;
 
-    public void login() {
-        conexao.conectar(new DadoLogin("lucas", "123"));
-    }
 
     public void enviarEmail() {
         final DadoEmail email = new DadoEmail();
@@ -26,11 +22,11 @@ public class ExemploDeUso {
         email.setAssunto("Assunto do email");
         email.setTexto("Texto do email");
 
-        conexao.enviarEmail(email);
+        ConexaoCliente.SINGLETON.enviarEmail(email);
     }
 
     public void buscarEmail() {
-        conexao.buscarEmails(destinatario);
+        ConexaoCliente.SINGLETON.buscarEmails(destinatario);
     }
 
 }

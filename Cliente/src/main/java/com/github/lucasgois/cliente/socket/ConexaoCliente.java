@@ -6,20 +6,38 @@ import com.github.lucasgois.core.util.Constantes;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ConexaoCliente implements HandlerMensagem {
+@SuppressWarnings("java:S654")
+public final class ConexaoCliente implements HandlerMensagem {
 
     private final ExecutorService executor = Executors.newCachedThreadPool();
     private Socket socket;
+
+    public static final ConexaoCliente SINGLETON = new ConexaoCliente();
+
+    private UUID token = null;
+
+    private ConexaoCliente() {
+    }
+
+    public boolean isConectado() {
+        return token != null;
+    }
 
     public void conectar(@NotNull final DadoLogin login) {
         try {
             socket = new Socket("127.0.0.1", Constantes.PORTA_CHAT);
             enviaDado(socket.getOutputStream(), login);
+
+        } catch (final ConnectException ex) {
+            throw new ErroRuntimeException("Sem conexão com o servidor", ex);
+
         } catch (final IOException ex) {
             throw new ErroRuntimeException(ex);
         }
@@ -29,8 +47,14 @@ public class ConexaoCliente implements HandlerMensagem {
 
     private void aguardarServidor() {
         try {
-            final Mensagem mensagem = recebeDado(socket.getInputStream());
-            log.info("Recebido: {}", mensagem);
+            final Dado mensagem = recebeDado(socket.getInputStream());
+
+            if (mensagem instanceof final DadoToken dadoToken) {
+                token = dadoToken.getToken();
+
+            } else {
+                throw new ErroRuntimeException("Tratar: " + mensagem);
+            }
 
         } catch (final SocketException ex) {
             log.info("finalizado");
