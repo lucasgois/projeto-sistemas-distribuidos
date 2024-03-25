@@ -50,6 +50,7 @@
             <Label fx:id="lb_usuario" prefWidth="100.0" GridPane.columnIndex="1" />
          </children>
       </GridPane>
-      <Button fx:id="btn_abrir1" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" text="Atualizar" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+      <Button fx:id="btn_atualizar" mnemonicParsing="false" prefHeight="25.0" prefWidth="120.0" text="Atualizar" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+      <Button fx:id="btn_escrever" mnemonicParsing="false" prefWidth="120.0" text="Escrever email" GridPane.columnIndex="2" GridPane.rowIndex="3" />
    </children>
 </GridPane>

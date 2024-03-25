@@ -29,8 +29,14 @@ public class CaixaEntradaController implements Initializable, Alerta {
     private Button btn_sair;
     @FXML
     private Button btn_abrir;
-//    @FXML
-//    private Button btn_atualizar;
+
+    @FXML
+    private Button btn_atualizar;
+
+    @FXML
+    private Button btn_escrever;
+
+
     @FXML
     private Label lb_usuario;
     @FXML
@@ -40,17 +46,38 @@ public class CaixaEntradaController implements Initializable, Alerta {
     @FXML
     private TableColumn<DadoEmail, String> tb_email_remetente;
 
-    private DadoEmail objetoEmail;
-
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
         btn_abrir.setOnAction(event -> handleVizualizaEmail());
         btn_sair.setOnAction(event -> handleSair());
         btn_excluir.setOnAction(event -> excluiEmail());
-//        btn_atualizar.setOnAction(event -> atualizarTabela());
+        btn_atualizar.setOnAction(event -> atualizarTabela());
+        btn_escrever.setOnAction(event -> escreverEmail());
 
         tb_email_assunto.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getAssunto()));
         tb_email_remetente.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getRemetente()));
+
+        DadoEmail dadoEmail = new DadoEmail();
+        dadoEmail.setId(2);
+        dadoEmail.setRemetente("Remetente");
+        dadoEmail.setAssunto("Assunto teste");
+
+        tb_produto.getItems().addAll(dadoEmail);
+    }
+
+    private void escreverEmail() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/tela_envio_email.fxml"));
+            Stage stage = new Stage();
+            stage.setScene(new Scene(loader.load()));
+            stage.setTitle("Escrever E-mail");
+
+            TelaEnvioEmailController telaEnvioEmailController = loader.getController();
+            telaEnvioEmailController.showAndWait(stage, 0);
+
+        } catch (IOException ex) {
+            erro(ex);
+        }
     }
 
     private void atualizarTabela(){
@@ -63,6 +90,12 @@ public class CaixaEntradaController implements Initializable, Alerta {
 
     private void handleVizualizaEmail() {
         //chamar tela de envio de email na versao de vizualizacao
+
+        if (tb_produto.getSelectionModel().getSelectedItem() == null) {
+            aviso("Nada selecionado.");
+            return;
+        }
+
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/tela_envio_email.fxml"));
             Stage stage = new Stage();
@@ -70,7 +103,7 @@ public class CaixaEntradaController implements Initializable, Alerta {
             stage.setTitle("Vizualiza Email");
 
             TelaEnvioEmailController telaEnvioEmailController = loader.getController();
-            telaEnvioEmailController.showAndWait(stage, objetoEmail.getId());
+            telaEnvioEmailController.showAndWait(stage, tb_produto.getSelectionModel().getSelectedItem().getId());
 
         } catch (IOException ex) {
             erro(ex);
