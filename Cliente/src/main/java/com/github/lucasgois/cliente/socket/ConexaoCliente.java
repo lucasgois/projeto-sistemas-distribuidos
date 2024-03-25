@@ -61,7 +61,7 @@ public final class ConexaoCliente implements HandlerMensagem {
             }
 
         } catch (final SocketException ex) {
-            log.info("finalizado");
+            log.info("Cliente encerrado");
             return;
 
         } catch (final IOException e) {
@@ -97,4 +97,23 @@ public final class ConexaoCliente implements HandlerMensagem {
         });
     }
 
+    private void logout() {
+        try {
+            enviaDado(socket.getOutputStream(), new DadoLogout(login.getToken()));
+        } catch (final IOException ex) {
+            throw new ErroRuntimeException(ex);
+        }
+    }
+
+    public void desconectar() {
+        logout();
+
+        executor.shutdownNow();
+
+        try {
+            socket.close();
+        } catch (final IOException ex) {
+            throw new ErroRuntimeException(ex);
+        }
+    }
 }

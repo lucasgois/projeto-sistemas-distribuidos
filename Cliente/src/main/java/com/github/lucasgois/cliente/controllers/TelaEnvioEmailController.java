@@ -1,6 +1,8 @@
 package com.github.lucasgois.cliente.controllers;
 
+import com.github.lucasgois.cliente.socket.ConexaoCliente;
 import com.github.lucasgois.core.mensagem.DadoAnexo;
+import com.github.lucasgois.core.mensagem.DadoEmail;
 import com.github.lucasgois.core.util.Alerta;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -8,45 +10,38 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+@Log4j2
 public class TelaEnvioEmailController implements Initializable, Alerta {
 
     @FXML
     private Button btn_anexarArquivos;
-
     @FXML
     private Button btn_vizualizaAnexo;
-
     @FXML
     private TableView<DadoAnexo> tb_anexo;
-
     @FXML
     private TableColumn<DadoAnexo, String> tb_anexo_arquivo;
-
     @FXML
     private Button btn_enviar;
-
     @FXML
     private Label lb_nomeUsuario;
-
     @FXML
     private TextField tf_assunto;
-
     @FXML
     private TextField tf_para;
-
     @FXML
     private TextArea tf_texto;
+
     private Stage stage;
 
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void initialize(final URL location, final ResourceBundle resources) {
         btn_enviar.setOnAction(event -> handleEnviar());
         btn_anexarArquivos.setOnAction(event -> handleAnexar());
         btn_vizualizaAnexo.setOnAction(event -> vizualizaAnexo());
@@ -63,15 +58,14 @@ public class TelaEnvioEmailController implements Initializable, Alerta {
 
         if (tb_anexo.getSelectionModel().getSelectedItem() == null) {
             aviso("Nada selecionado.");
-            return;
         }
 
     }
 
     private void handleAnexar() {
-        FileChooser fileChooser = new FileChooser();
+        final FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Selecione um arquivo");
-        File selectedFile = fileChooser.showOpenDialog(stage);
+        final File selectedFile = fileChooser.showOpenDialog(stage);
 
         if (selectedFile != null) {
             System.out.println("Arquivo selecionado: " + selectedFile.getAbsolutePath());
@@ -83,8 +77,8 @@ public class TelaEnvioEmailController implements Initializable, Alerta {
 //            } catch (Exception ex) {
 //                erro(ex);
 //            }
-            DadoAnexo dadoAnexo = new DadoAnexo();
-            byte[] fileBytes = new byte[(int) selectedFile.length()];
+            final DadoAnexo dadoAnexo = new DadoAnexo();
+            final byte[] fileBytes = new byte[(int) selectedFile.length()];
             dadoAnexo.setAnexo(fileBytes);
             dadoAnexo.setNomeAnexo(selectedFile.getName());
             tb_anexo.getItems().add(dadoAnexo);
@@ -96,13 +90,20 @@ public class TelaEnvioEmailController implements Initializable, Alerta {
     private void handleEnviar() {
         //quando a tela estiver no modo de escrever email, aqui colocar a requisicao de envio para o servidor
         try {
+            final DadoEmail email = new DadoEmail();
 
-        } catch (Exception ex){
-            aviso("Usuario "+ tf_para.getText() + "não existe.");
+            email.setAssunto("");
+            email.setTexto("");
+            email.setDestinatario("");
+            email.setRemetente("");
+
+            ConexaoCliente.SINGLETON.enviarEmail(email);
+        } catch (final Exception ex) {
+            aviso("Usuario " + tf_para.getText() + "não existe.");
         }
     }
 
-    public void showAndWait(Stage stage, int id) {
+    public void showAndWait(final Stage stage, final int id) {
 
         this.stage = stage;
 
@@ -125,11 +126,11 @@ public class TelaEnvioEmailController implements Initializable, Alerta {
         stage.showAndWait();
     }
 
-    private void infoEmail(int id) {
+    private void infoEmail(final int id) {
         //dados do email via requisição onde trara tudo menos o anexo, só o nome dele pelo ID
 
 
-        lb_nomeUsuario.setText("Usuário: "+ "remetente");
+        lb_nomeUsuario.setText("Usuário: " + "remetente");
         tf_para.setText("Usuario destinatario");
         tf_assunto.setText("Esse é um dado mocado para teste");
         tf_texto.setText("Esse é um dado mocado para teste texto");

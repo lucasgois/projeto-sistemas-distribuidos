@@ -107,13 +107,16 @@ public class CaixaEntradaController implements Initializable, Alerta {
     }
 
     private void handleSair() {
+        ConexaoCliente.SINGLETON.desconectar();
         ((Stage) btn_sair.getScene().getWindow()).close();
     }
 
     public void showAndWait() {
         lb_usuario.setText(ConexaoCliente.SINGLETON.getLogin().getNome());
 
-        ((Stage) lb_usuario.getScene().getWindow()).showAndWait();
+        final Stage stage = (Stage) lb_usuario.getScene().getWindow();
+        stage.setOnCloseRequest(event -> ConexaoCliente.SINGLETON.desconectar());
+        stage.showAndWait();
     }
 
 }

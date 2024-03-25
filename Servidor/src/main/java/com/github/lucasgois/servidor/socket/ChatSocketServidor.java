@@ -72,6 +72,10 @@ public class ChatSocketServidor {
                     final UUID uuid = BancoHandler.login(login);
                     cliente.enviar(new DadoLogin(uuid));
 
+                } else if (dado instanceof final DadoLogout dadoLogout) {
+                    log.info("Logout: {}", dadoLogout.getToken());
+                    break;
+
                 } else if (dado instanceof final DadoEmail email) {
                     BancoHandler.email(email);
 
@@ -81,14 +85,8 @@ public class ChatSocketServidor {
                     var teste = BancoHandler.buscarEmails(solicitarEmail.getUsuario());
                     log.info("TESTE {}", teste);
 
-//                } else if (dado instanceof final DadoLogout logout) {
-//
-//                    if (dadoConexao.isStatus()) {
-//                        cliente.setId(dadoConexao.getOrigem());
-//
-//                    } else {
-//                        break;
-//                    }
+                } else {
+                    throw new ErroRuntimeException("Tratar: " + dado);
                 }
             }
 
