@@ -13,6 +13,14 @@
         <module>Servidor</module>
         <module>Core</module>
     </modules>
+<dependencies>
+    <!-- https://mvnrepository.com/artifact/org.openjfx/javafx-controls -->
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-controls</artifactId>
+        <version>21.0.2</version>
+    </dependency>
+</dependencies>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

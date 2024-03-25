@@ -9,6 +9,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class DadoEmail extends Dado {
 
+    private int id;
     private DadoUsuario remetente;
     private DadoUsuario destinatario;
     private String assunto;

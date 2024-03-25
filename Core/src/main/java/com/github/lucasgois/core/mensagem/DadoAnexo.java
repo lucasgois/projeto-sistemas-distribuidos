@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class DadoAnexo extends Dado {
 
+    private String nomeAnexo;
     private byte[] anexo;
 
 }

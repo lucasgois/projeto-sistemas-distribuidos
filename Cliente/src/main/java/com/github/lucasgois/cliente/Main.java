@@ -24,7 +24,7 @@ public class Main extends Application {
 
         final Scene cena = new Scene(raiz);
         primaryStage.setScene(cena);
-        primaryStage.setTitle("Titulo da Minha Aplicação");
+        primaryStage.setTitle("Client chat");
         primaryStage.show();
 
 

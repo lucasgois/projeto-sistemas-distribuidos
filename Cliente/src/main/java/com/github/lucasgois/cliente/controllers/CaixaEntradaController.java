@@ -10,11 +10,14 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import lombok.extern.java.Log;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -46,6 +49,7 @@ public class CaixaEntradaController implements Initializable, Alerta {
     @FXML
     private TableColumn<DadoEmail, String> tb_email_remetente;
 
+    DadoEmail objetoEmail;
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
@@ -68,6 +72,18 @@ public class CaixaEntradaController implements Initializable, Alerta {
 
     private void handleVizualizaEmail() {
         //chamar tela de envio de email na versao de vizualizacao
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/ListaClientes.fxml"));
+            Stage stage = new Stage();
+            stage.setScene(new Scene(loader.load()));
+            stage.setTitle("Vizualiza Email");
+
+            TelaEnvioEmailController telaEnvioEmailController = loader.getController();
+            telaEnvioEmailController.showAndWait(stage, objetoEmail.getId());
+
+        } catch (IOException ex) {
+            erro(ex);
+        }
     }
 
     private void handleSair() {
