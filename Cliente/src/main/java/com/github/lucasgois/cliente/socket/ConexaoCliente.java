@@ -2,6 +2,7 @@ package com.github.lucasgois.cliente.socket;
 
 import com.github.lucasgois.core.exceptions.ErroRuntimeException;
 import com.github.lucasgois.core.mensagem.*;
+import com.github.lucasgois.core.util.Alerta;
 import com.github.lucasgois.core.util.Constantes;
 import javafx.collections.ObservableList;
 import lombok.Getter;
@@ -14,10 +15,10 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 @SuppressWarnings("java:S654")
-public final class ConexaoCliente implements HandlerMensagem {
+public final class ConexaoCliente implements HandlerMensagem, Alerta {
 
     private final ExecutorService executor = Executors.newCachedThreadPool();
     private Socket socket;
@@ -31,7 +32,7 @@ public final class ConexaoCliente implements HandlerMensagem {
     @Setter
     private ObservableList<DadoEmail> listaEmails;
     @Getter
-    private final AtomicBoolean conectado = new AtomicBoolean(false);
+    private final AtomicReference<String> erro = new AtomicReference<>(null);
     @Getter
     @Setter
     private String endereco = "127.0.0.1";
@@ -41,6 +42,7 @@ public final class ConexaoCliente implements HandlerMensagem {
 
     public void conectar(@NotNull final DadoLogin login) {
         try {
+            erro.set(null);
             socket = new Socket(endereco, Constantes.PORTA_CHAT);
             enviaDado(socket.getOutputStream(), login);
             this.login = login;
@@ -60,18 +62,21 @@ public final class ConexaoCliente implements HandlerMensagem {
             final Dado mensagem = recebeDado(socket.getInputStream());
 
             if (mensagem instanceof DadoLogin) {
-                conectado.set(true);
+                erro.set("");
 
             } else if (mensagem instanceof final DadoListaEmail listaEmail) {
                 listaEmails.clear();
                 listaEmails.addAll(listaEmail.getLista());
+
+            } else if (mensagem instanceof final DadoErro dadoErro) {
+                erro.set(dadoErro.getMensagem());
+                return;
 
             } else {
                 throw new ErroRuntimeException("Tratar: " + mensagem);
             }
 
         } catch (final SocketException ex) {
-            conectado.set(false);
             log.info("Cliente encerrado");
             return;
 

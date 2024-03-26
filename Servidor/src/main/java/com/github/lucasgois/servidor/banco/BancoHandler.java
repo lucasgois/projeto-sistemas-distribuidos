@@ -82,7 +82,7 @@ public class BancoHandler {
 
     }
 
-    public void login(@NotNull final DadoLogin login) {
+    public boolean login(@NotNull final DadoLogin login) {
         try (final Session session = HibernateUtil.getSessionFactory().openSession()) {
             final Usuario usuarioEncontrado = buscarUsuario(session, login.getNome());
 
@@ -90,17 +90,15 @@ public class BancoHandler {
                 session.beginTransaction();
                 cadastrarUsuario(session, login.getNome(), login.getSenha());
                 session.getTransaction().commit();
+                return true;
 
             } else {
                 if (Objects.equals(usuarioEncontrado.getSenha(), login.getSenha())) {
                     log.info("Login efetuado com sucesso: {}", usuarioEncontrado.getNome());
-
-                } else if (usuarioEncontrado.getSenha() == null) {
-                    usuarioEncontrado.setSenha(login.getSenha());
-                    session.persist(usuarioEncontrado);
+                    return true;
 
                 } else {
-                    throw new ErroRuntimeException("Usuário ou senha inválidos");
+                    return false;
                 }
             }
         }

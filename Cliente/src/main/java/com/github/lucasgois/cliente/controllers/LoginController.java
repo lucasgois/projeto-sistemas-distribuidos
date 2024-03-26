@@ -11,10 +11,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import lombok.extern.log4j.Log4j2;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
+@Log4j2
 public class LoginController implements Initializable, Alerta {
 
     @FXML
@@ -44,17 +46,23 @@ public class LoginController implements Initializable, Alerta {
 
             ConexaoCliente.SINGLETON.conectar(new DadoLogin(tf_usuario.getText(), tf_senha.getText()));
 
-            while (!ConexaoCliente.SINGLETON.getConectado().get()) {
+            while (ConexaoCliente.SINGLETON.getErro().get() == null) {
             }
 
-            ((Stage) tf_usuario.getScene().getWindow()).close();
+            if (ConexaoCliente.SINGLETON.getErro().get().isBlank()) {
+                ((Stage) tf_usuario.getScene().getWindow()).close();
 
-            final FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/caixa_entrada.fxml"));
-            final Stage stage = new Stage();
-            stage.setScene(new Scene(loader.load()));
-            stage.setTitle("Caixa de Entrada");
+                final FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/caixa_entrada.fxml"));
+                final Stage stage = new Stage();
+                stage.setScene(new Scene(loader.load()));
+                stage.setTitle("Caixa de Entrada");
 
-            ((CaixaEntradaController) loader.getController()).showAndWait();
+                ((CaixaEntradaController) loader.getController()).showAndWait();
+
+            } else {
+                aviso(ConexaoCliente.SINGLETON.getErro().get());
+            }
+
 
         } catch (final Exception ex) {
             erro(ex);

@@ -66,10 +66,14 @@ public class ChatSocketServidor {
 
                 if (dado instanceof final DadoLogin dadoLogin) {
                     login = dadoLogin;
-                    BancoHandler.login(login);
-                    cliente.enviar(login);
 
-                    clientes.put(login.getNome(), cliente);
+                    if (BancoHandler.login(login)) {
+                        cliente.enviar(login);
+                        clientes.put(login.getNome(), cliente);
+                    } else {
+                        cliente.enviar(new DadoErro("Usuário ou senha inválidos"));
+                        break;
+                    }
 
                 } else if (dado instanceof final DadoLogout dadoLogout) {
                     Objects.requireNonNull(login, "Login nulo");
