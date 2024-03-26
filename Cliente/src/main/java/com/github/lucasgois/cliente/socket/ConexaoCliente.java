@@ -66,7 +66,7 @@ public final class ConexaoCliente implements HandlerMensagem, Alerta {
 
             } else if (mensagem instanceof final DadoListaEmail listaEmail) {
                 listaEmails.clear();
-                listaEmails.addAll(listaEmail.getLista());
+                listaEmails.addAll(listaEmail.getLista().reversed());
 
             } else if (mensagem instanceof final DadoErro dadoErro) {
                 erro.set(dadoErro.getMensagem());
