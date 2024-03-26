@@ -19,6 +19,10 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <project.organization.name>Projeto SI</project.organization.name>
+        <project.inceptionYear>2023</project.inceptionYear>
+        <project.description>descricao</project.description>
     </properties>
 
     <build>
@@ -41,7 +45,51 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-jar-plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <mainClass>${mainClass}</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
         </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <!-- https://mvnrepository.com/artifact/com.akathist.maven.plugins.launch4j/launch4j-maven-plugin -->
+                <plugin>
+                    <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                    <artifactId>launch4j-maven-plugin</artifactId>
+                    <version>2.5.0</version>
+                    <executions>
+                        <execution>
+                            <id>l4j-clui</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>launch4j</goal>
+                            </goals>
+                            <configuration>
+                                <headerType>gui</headerType>
+                                <jar>${project.build.directory}/${project.build.finalName}.jar</jar>
+                                <outfile>${project.build.directory}/${project.build.finalName}.exe</outfile>
+                                <jre>
+                                    <path>../runtime</path>
+                                </jre>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
     <dependencies>

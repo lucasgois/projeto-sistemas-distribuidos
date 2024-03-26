@@ -12,6 +12,19 @@
 
     <artifactId>Cliente</artifactId>
 
+    <properties>
+        <mainClass>com.github.lucasgois.cliente.MainCliente</mainClass>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                <artifactId>launch4j-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
     <dependencies>
 
         <dependency>

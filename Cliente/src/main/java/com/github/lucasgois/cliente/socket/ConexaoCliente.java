@@ -32,13 +32,16 @@ public final class ConexaoCliente implements HandlerMensagem {
     private ObservableList<DadoEmail> listaEmails;
     @Getter
     private final AtomicBoolean conectado = new AtomicBoolean(false);
+    @Getter
+    @Setter
+    private String endereco = "127.0.0.1";
 
     private ConexaoCliente() {
     }
 
     public void conectar(@NotNull final DadoLogin login) {
         try {
-            socket = new Socket("127.0.0.1", Constantes.PORTA_CHAT);
+            socket = new Socket(endereco, Constantes.PORTA_CHAT);
             enviaDado(socket.getOutputStream(), login);
             this.login = login;
 

@@ -18,6 +18,8 @@ import java.util.ResourceBundle;
 public class LoginController implements Initializable, Alerta {
 
     @FXML
+    private TextField tf_endereco;
+    @FXML
     private TextField tf_usuario;
     @FXML
     private PasswordField tf_senha;
@@ -27,6 +29,7 @@ public class LoginController implements Initializable, Alerta {
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
+        tf_endereco.setText(ConexaoCliente.SINGLETON.getEndereco());
         tf_usuario.setText("");
         tf_senha.setText("");
         btn_enviar.setOnAction(event -> conectar());
@@ -37,6 +40,8 @@ public class LoginController implements Initializable, Alerta {
         // se o servidor tiver fora estora erro
 
         try {
+            ConexaoCliente.SINGLETON.setEndereco(tf_endereco.getText());
+
             ConexaoCliente.SINGLETON.conectar(new DadoLogin(tf_usuario.getText(), tf_senha.getText()));
 
             while (!ConexaoCliente.SINGLETON.getConectado().get()) {
