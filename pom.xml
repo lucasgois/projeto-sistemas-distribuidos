@@ -82,7 +82,7 @@
                                 <jar>${project.build.directory}/${project.build.finalName}.jar</jar>
                                 <outfile>${project.build.directory}/${project.build.finalName}.exe</outfile>
                                 <jre>
-                                    <path>../runtime</path>
+                                    <path>runtime</path>
                                 </jre>
                             </configuration>
                         </execution>
