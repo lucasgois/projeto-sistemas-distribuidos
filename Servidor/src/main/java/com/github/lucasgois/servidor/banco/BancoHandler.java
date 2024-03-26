@@ -1,5 +1,6 @@
 package com.github.lucasgois.servidor.banco;
 
+import com.github.lucasgois.core.exceptions.DestinatarioNaoExisteRuntimeException;
 import com.github.lucasgois.core.exceptions.ErroRuntimeException;
 import com.github.lucasgois.core.mensagem.DadoEmail;
 import com.github.lucasgois.core.mensagem.DadoLogin;
@@ -26,10 +27,10 @@ public class BancoHandler {
             session.beginTransaction();
 
             final Usuario remetente = buscarUsuario(session, email.getRemetente());
-            Usuario destinatario = buscarUsuario(session, email.getDestinatario());
+            final Usuario destinatario = buscarUsuario(session, email.getDestinatario());
 
             if (destinatario == null) {
-                destinatario = cadastrarUsuario(session, email.getDestinatario(), null);
+                throw new DestinatarioNaoExisteRuntimeException();
             }
 
             final Email entidade = new Email();
