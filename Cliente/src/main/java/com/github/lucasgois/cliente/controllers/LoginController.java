@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -17,11 +18,11 @@ import java.util.ResourceBundle;
 public class LoginController implements Initializable, Alerta {
 
     @FXML
-    private Button btn_enviar;
-    @FXML
-    private TextField tf_senha;
-    @FXML
     private TextField tf_usuario;
+    @FXML
+    private PasswordField tf_senha;
+    @FXML
+    private Button btn_enviar;
 
 
     @Override

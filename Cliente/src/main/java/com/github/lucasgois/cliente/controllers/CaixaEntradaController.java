@@ -113,7 +113,7 @@ public class CaixaEntradaController implements Initializable, Alerta {
             final FXMLLoader loader = new FXMLLoader(getClass().getResource("/views/tela_envio_email.fxml"));
             final Stage visualizarEmailStage = new Stage();
             visualizarEmailStage.setScene(new Scene(loader.load()));
-            visualizarEmailStage.setTitle("Vizualiza Email");
+            visualizarEmailStage.setTitle("Visualização de E-mail");
             visualizarEmailStage.initModality(Modality.WINDOW_MODAL);
             visualizarEmailStage.initOwner(stage);
 
