@@ -1,20 +1,21 @@
 package com.github.lucasgois.servidor.socket;
 
-import com.github.lucasgois.core.exceptions.AvisoException;
+import com.github.lucasgois.core.exceptions.DestinatarioNaoExisteRuntimeException;
 import com.github.lucasgois.core.exceptions.ErroRuntimeException;
 import com.github.lucasgois.core.mensagem.*;
 import com.github.lucasgois.core.util.Constantes;
 import com.github.lucasgois.servidor.banco.BancoHandler;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -26,7 +27,7 @@ public class ChatSocketServidor {
     private volatile boolean rodando = false;
     private final ExecutorService pool = Executors.newCachedThreadPool();
 
-    private final Collection<SocketCliente> clientes = new ArrayList<>(4);
+    private final Map<String, SocketCliente> clientes = new HashMap<>(4);
 
     public void iniciar() {
         pool.execute(() -> {
@@ -55,23 +56,20 @@ public class ChatSocketServidor {
     @SuppressWarnings({"java:S1163", "ChainOfInstanceofChecks"})
     private void handleClient(final Socket socket) {
         final SocketCliente cliente = new SocketCliente(socket);
+        DadoLogin login = null;
 
         try {
-            DadoLogin login = null;
-
-            clientes.add(cliente);
 
             // Leitura continua
             while (!socket.isClosed()) {
                 final Dado dado = cliente.receber();
 
-                if (dado instanceof final Mensagem mensagem) {
-                    enviarTodos(mensagem, cliente.getId());
-
-                } else if (dado instanceof final DadoLogin dadoLogin) {
+                if (dado instanceof final DadoLogin dadoLogin) {
                     login = dadoLogin;
                     BancoHandler.login(login);
                     cliente.enviar(login);
+
+                    clientes.put(login.getNome(), cliente);
 
                 } else if (dado instanceof final DadoLogout dadoLogout) {
                     Objects.requireNonNull(login, "Login nulo");
@@ -79,7 +77,25 @@ public class ChatSocketServidor {
                     break;
 
                 } else if (dado instanceof final DadoEmail email) {
-                    BancoHandler.email(email);
+
+                    try {
+                        BancoHandler.email(email);
+                    } catch (final DestinatarioNaoExisteRuntimeException ex) {
+                        email.setAssunto("Não enviado: " + email.getAssunto());
+                        email.setTexto("%s%n%nO email não foi enviado porque o destinatário '%s' não foi encontrado".formatted(email.getTexto(), email.getDestinatario()));
+                        email.setDestinatario(email.getRemetente());
+                        BancoHandler.email(email);
+                    }
+
+                    final SocketCliente clienteDestinatario = clientes.get(email.getDestinatario());
+
+                    if (clienteDestinatario == null) {
+                        log.warn("Email para o destinatário '" + email.getDestinatario() + "' não offline");
+
+                    } else {
+                        final List<DadoEmail> dadoListaEmail = BancoHandler.buscarEmails(email.getDestinatario());
+                        clienteDestinatario.enviar(new DadoListaEmail(dadoListaEmail));
+                    }
 
                 } else if (dado instanceof DadoSolicitarEmail) {
                     Objects.requireNonNull(login, "Login nulo");
@@ -103,7 +119,8 @@ public class ChatSocketServidor {
             socket.close();
 
         } catch (final SocketException e) {
-            clientes.remove(cliente);
+            Objects.requireNonNull(login, "Login nulo");
+            clientes.remove(login.getNome());
 
         } catch (final IOException e) {
             throw new ErroRuntimeException(e);
@@ -122,46 +139,4 @@ public class ChatSocketServidor {
         }
     }
 
-    public void enviar(final String texto) throws AvisoException {
-
-        if (clientes.isEmpty()) {
-            throw new AvisoException("Não há clientes conectados");
-        }
-
-        final Mensagem mensagem = new Mensagem();
-        mensagem.setOrigem(Constantes.ID_SERVIDOR);
-        mensagem.setTexto(texto);
-
-        enviarTodos(mensagem, Constantes.ID_SERVIDOR);
-    }
-
-    private void enviarTodos(final Mensagem mensagem, @Nullable final UUID... naoEnviarPara) {
-        for (final SocketCliente cliente : clientes) {
-
-            if (contem(cliente, naoEnviarPara)) {
-                continue;
-            }
-
-            try {
-                cliente.enviar(mensagem);
-
-            } catch (final SocketException ex) {
-                clientes.remove(cliente);
-
-            } catch (final Exception ex) {
-                throw new ErroRuntimeException(ex);
-            }
-        }
-    }
-
-    private static boolean contem(@NotNull final SocketCliente cliente, @Nullable final UUID[] exceto) {
-        for (final UUID uuid : exceto) {
-            if (cliente.getId() == uuid) {
-                return true;
-            }
-        }
-        return false;
-    }
-
 }
-

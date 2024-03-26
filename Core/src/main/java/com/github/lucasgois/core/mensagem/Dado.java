@@ -3,18 +3,14 @@ package com.github.lucasgois.core.mensagem;
 import com.github.lucasgois.core.exceptions.ErroRuntimeException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
 import java.io.*;
-import java.util.UUID;
 
 @Data
-@NoArgsConstructor
+@EqualsAndHashCode
 @AllArgsConstructor
 public class Dado implements Serializable {
-
-    private UUID origem;
-    private UUID destino;
 
     public byte[] write() {
         try {

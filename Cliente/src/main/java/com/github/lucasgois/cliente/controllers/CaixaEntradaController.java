@@ -75,8 +75,6 @@ public class CaixaEntradaController implements Initializable, Alerta {
             final TelaEnvioEmailController telaEnvioEmailController = loader.getController();
             telaEnvioEmailController.showAndWait(escreverEmailStage, null);
 
-            atualizarTabela();
-
         } catch (final IOException ex) {
             erro(ex);
         }

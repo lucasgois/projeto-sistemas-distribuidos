@@ -3,10 +3,8 @@ package com.github.lucasgois.servidor.socket;
 import com.github.lucasgois.core.exceptions.ErroRuntimeException;
 import com.github.lucasgois.core.mensagem.Dado;
 import com.github.lucasgois.core.mensagem.HandlerMensagem;
-import com.github.lucasgois.core.mensagem.Mensagem;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.extern.java.Log;
 import lombok.extern.log4j.Log4j2;
 import org.jetbrains.annotations.NotNull;
 
