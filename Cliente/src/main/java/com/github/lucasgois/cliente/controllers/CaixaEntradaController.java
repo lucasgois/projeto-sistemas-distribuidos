@@ -37,7 +37,7 @@ public class CaixaEntradaController implements Initializable, Alerta {
     @FXML
     private Label lb_usuario;
     @FXML
-    private TableView<DadoEmail> tb_produto;
+    private TableView<DadoEmail> tb_email;
     @FXML
     private TableColumn<DadoEmail, String> tb_email_assunto;
     @FXML
@@ -47,6 +47,8 @@ public class CaixaEntradaController implements Initializable, Alerta {
 
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
+        btn_atualizar.setVisible(false);
+
         btn_abrir.setOnAction(event -> handleVizualizaEmail());
         btn_sair.setOnAction(event -> handleSair());
         btn_excluir.setOnAction(event -> handleExcluir());
@@ -56,7 +58,7 @@ public class CaixaEntradaController implements Initializable, Alerta {
         tb_email_assunto.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getAssunto()));
         tb_email_remetente.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getRemetente()));
 
-        ConexaoCliente.SINGLETON.setListaEmails(tb_produto.getItems());
+        ConexaoCliente.SINGLETON.setListaEmails(tb_email.getItems());
 
         atualizarTabela();
     }
@@ -89,7 +91,7 @@ public class CaixaEntradaController implements Initializable, Alerta {
     private void handleExcluir() {
         //aqui fazer uma requisição para excluir o email do servidor e após isso atualizar a tabela
 
-        final DadoEmail emailSelecionado = tb_produto.getSelectionModel().getSelectedItem();
+        final DadoEmail emailSelecionado = tb_email.getSelectionModel().getSelectedItem();
 
         if (emailSelecionado == null) {
             aviso("Nada selecionado.");
@@ -102,7 +104,7 @@ public class CaixaEntradaController implements Initializable, Alerta {
     private void handleVizualizaEmail() {
         //chamar tela de envio de email na versao de vizualizacao
 
-        if (tb_produto.getSelectionModel().getSelectedItem() == null) {
+        if (tb_email.getSelectionModel().getSelectedItem() == null) {
             aviso("Nada selecionado.");
             return;
         }
@@ -116,7 +118,7 @@ public class CaixaEntradaController implements Initializable, Alerta {
             visualizarEmailStage.initOwner(stage);
 
             final TelaEnvioEmailController telaEnvioEmailController = loader.getController();
-            telaEnvioEmailController.showAndWait(visualizarEmailStage, tb_produto.getSelectionModel().getSelectedItem());
+            telaEnvioEmailController.showAndWait(visualizarEmailStage, tb_email.getSelectionModel().getSelectedItem());
 
         } catch (final IOException ex) {
             erro(ex);

@@ -5,28 +5,31 @@ import com.github.lucasgois.core.mensagem.DadoEmail;
 import com.github.lucasgois.core.mensagem.DadoLogin;
 import com.github.lucasgois.servidor.banco.entidades.Email;
 import com.github.lucasgois.servidor.banco.entidades.Usuario;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import lombok.experimental.UtilityClass;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.Session;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Log4j2
 @UtilityClass
 public class BancoHandler {
-
-    private final Set<UUID> UUID_SET = new HashSet<>(8);
 
     public void email(@NotNull final DadoEmail email) {
         try (final Session session = HibernateUtil.getSessionFactory().openSession()) {
             session.beginTransaction();
 
             final Usuario remetente = buscarUsuario(session, email.getRemetente());
-            final Usuario destinatario = buscarUsuario(session, email.getDestinatario());
+            Usuario destinatario = buscarUsuario(session, email.getDestinatario());
 
             if (destinatario == null) {
-                throw new ErroRuntimeException("Destinatario nao encontrado: " + email.getDestinatario());
+                destinatario = cadastrarUsuario(session, email.getDestinatario(), null);
             }
 
             final Email entidade = new Email();
@@ -40,10 +43,15 @@ public class BancoHandler {
         }
     }
 
-    private Usuario buscarUsuario(@NotNull final Session session, final String nome) {
-        return session.createQuery("FROM Usuario WHERE nome = :nome", Usuario.class)
-                .setParameter("nome", nome)
-                .uniqueResult();
+    private @Nullable Usuario buscarUsuario(@NotNull final EntityManager session, final String nome) {
+        try {
+            return session.createQuery("FROM Usuario WHERE nome = :nome", Usuario.class)
+                    .setParameter("nome", nome)
+                    .getSingleResult();
+
+        } catch (final NoResultException ex) {
+            return null;
+        }
     }
 
     public List<DadoEmail> buscarEmails(@NotNull final String usuario) {
@@ -73,23 +81,22 @@ public class BancoHandler {
 
     }
 
-    public UUID login(@NotNull final DadoLogin login) {
+    public void login(@NotNull final DadoLogin login) {
         try (final Session session = HibernateUtil.getSessionFactory().openSession()) {
             final Usuario usuarioEncontrado = buscarUsuario(session, login.getNome());
 
             if (usuarioEncontrado == null) {
                 session.beginTransaction();
-                final Usuario novoUsuario = new Usuario();
-                novoUsuario.setNome(login.getNome());
-                novoUsuario.setSenha(login.getSenha());
-                session.persist(novoUsuario);
+                cadastrarUsuario(session, login.getNome(), login.getSenha());
                 session.getTransaction().commit();
-                log.info("Usuário criado com sucesso: {}", novoUsuario);
-                return getUuid();
+
             } else {
                 if (Objects.equals(usuarioEncontrado.getSenha(), login.getSenha())) {
                     log.info("Login efetuado com sucesso: {}", usuarioEncontrado.getNome());
-                    return getUuid();
+
+                } else if (usuarioEncontrado.getSenha() == null) {
+                    usuarioEncontrado.setSenha(login.getSenha());
+                    session.persist(usuarioEncontrado);
 
                 } else {
                     throw new ErroRuntimeException("Usuário ou senha inválidos");
@@ -98,10 +105,13 @@ public class BancoHandler {
         }
     }
 
-    private @NotNull UUID getUuid() {
-        final UUID uuid = UUID.randomUUID();
-        UUID_SET.add(uuid);
-        return uuid;
+    private @NotNull Usuario cadastrarUsuario(@NotNull final Session session, @NotNull final String usuario, @Nullable final String senha) {
+        final Usuario novoUsuario = new Usuario();
+        novoUsuario.setNome(usuario);
+        novoUsuario.setSenha(senha);
+        session.persist(novoUsuario);
+        log.info("Usuário criado com sucesso: {}", novoUsuario);
+        return novoUsuario;
     }
 
     public void excluirEmail(final int id) {

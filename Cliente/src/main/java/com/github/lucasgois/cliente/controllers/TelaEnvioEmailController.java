@@ -21,10 +21,10 @@ import java.util.ResourceBundle;
 @SuppressWarnings("java:S116")
 public class TelaEnvioEmailController implements Initializable, Alerta {
 
-    @FXML
-    private Button btn_anexarArquivos;
-    @FXML
-    private Button btn_vizualizaAnexo;
+//    @FXML
+//    private Button btn_anexarArquivos;
+//    @FXML
+//    private Button btn_vizualizaAnexo;
     @FXML
     private TableView<DadoAnexo> tb_anexo;
     @FXML
@@ -45,14 +45,14 @@ public class TelaEnvioEmailController implements Initializable, Alerta {
     @Override
     public void initialize(final URL location, final ResourceBundle resources) {
         btn_enviar.setOnAction(event -> handleEnviar());
-        btn_anexarArquivos.setOnAction(event -> handleAnexar());
-        btn_vizualizaAnexo.setOnAction(event -> vizualizaAnexo());
-        lb_nomeUsuario.setText("");
+//        btn_anexarArquivos.setOnAction(event -> handleAnexar());
+//        btn_vizualizaAnexo.setOnAction(event -> vizualizaAnexo());
+        lb_nomeUsuario.setText(ConexaoCliente.SINGLETON.getLogin().getNome());
         tf_para.setText("");
         tf_assunto.setText("");
         tf_texto.setText("");
 
-        tb_anexo_arquivo.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getNomeAnexo()));
+//        tb_anexo_arquivo.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getNomeAnexo()));
     }
 
     private void vizualizaAnexo() {
@@ -97,7 +97,7 @@ public class TelaEnvioEmailController implements Initializable, Alerta {
             email.setTexto(tf_texto.getText());
             email.setDestinatario(tf_para.getText());
             email.setRemetente(ConexaoCliente.SINGLETON.getLogin().getNome());
-            email.setAnexos(tb_anexo.getItems());
+//            email.setAnexos(tb_anexo.getItems());
 
             ConexaoCliente.SINGLETON.enviarEmail(email);
             aviso("E-mail enviado.");
@@ -105,7 +105,9 @@ public class TelaEnvioEmailController implements Initializable, Alerta {
             stage.close();
 
         } catch (final Exception ex) {
-            aviso("Usuario " + tf_para.getText() + "não existe.");
+            ex.printStackTrace();
+
+            aviso("Usuario " + tf_para.getText() + " não existe.");
         }
     }
 
@@ -118,8 +120,8 @@ public class TelaEnvioEmailController implements Initializable, Alerta {
             tf_assunto.setEditable(true);
             tf_texto.setEditable(true);
             btn_enviar.setVisible(true);
-            btn_anexarArquivos.setVisible(true);
-            btn_vizualizaAnexo.setVisible(false);
+//            btn_anexarArquivos.setVisible(false);
+//            btn_vizualizaAnexo.setVisible(false);
 
         } else {
             infoEmail(dadoEmail);
@@ -127,8 +129,8 @@ public class TelaEnvioEmailController implements Initializable, Alerta {
             tf_assunto.setEditable(false);
             tf_texto.setEditable(false);
             btn_enviar.setVisible(false);
-            btn_anexarArquivos.setVisible(false);
-            btn_vizualizaAnexo.setVisible(true);
+//            btn_anexarArquivos.setVisible(false);
+//            btn_vizualizaAnexo.setVisible(true);
         }
 
         stage.showAndWait();
